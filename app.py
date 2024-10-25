@@ -1,5 +1,36 @@
 # Importa le librerie necessarie
 import streamlit as st
+import streamlit as st
+
+# Imposta lo stato iniziale per la selezione
+if "sezione_selezionata" not in st.session_state:
+    st.session_state["sezione_selezionata"] = "Formazione"  # Default
+
+# Funzione per aggiornare la sezione selezionata
+def seleziona_sezione(sezione):
+    st.session_state["sezione_selezionata"] = sezione
+
+# Layout con due pulsanti
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("Formazione"):
+        seleziona_sezione("Formazione")
+with col2:
+    if st.button("Documenti"):
+        seleziona_sezione("Documenti")
+
+# Mostra quale sezione è attualmente attiva
+sezione_corrente = st.session_state["sezione_selezionata"]
+st.write(f"Hai selezionato: **{sezione_corrente}**")
+
+# Esegue il caricamento e l'analisi in base alla sezione selezionata
+if sezione_corrente == "Formazione":
+    # Inserisci qui il codice per il caricamento e l'analisi della formazione
+    st.write("Caricamento e analisi della formazione...")
+else:
+    # Inserisci qui il codice per il caricamento e l'analisi dei documenti
+    st.write("Caricamento e analisi dei documenti...")
+
 import pandas as pd
 from io import BytesIO
 import xlsxwriter
