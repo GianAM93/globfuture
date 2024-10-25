@@ -38,45 +38,36 @@ st.markdown("""
             text-align: center;
             margin-bottom: 32px;
         }
-        /* Contenitore per i pulsanti */
-.button-container {
-    text-align: center;
-    margin-bottom: 32px; /* Spazio sotto il container */
-}
 
-/* Pulsanti */
-.stButton button {
-    width: 150px; /* Larghezza del pulsante */
-    height: 48px; /* Altezza del pulsante */
-    padding: 12px 24px; /* Padding interno */
-    border-radius: 8px;
-    margin: 8px; /* Spazio tra i pulsanti */
-    background-color: #FF4B4B;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.stButton button:hover {
-    background-color: #FF2B2B;
-}
+        /* Pulsanti */
+        .stButton button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            height: 48px;
+            margin-right: 16px; /* Spazio tra i pulsanti */
+            background-color: #FF4B4B;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .stButton button:hover {
+            background-color: #FF2B4B;
+        }
 
         /* Area drag & drop */
         .stFileUploader {
             width: 100%;
-            max-width: 700px;
             border: 4px dashed #cccccc;
             border-radius: 8px;
             padding: 32px;
             text-align: center;
-            margin: auto;
         }
         .stFileUploader label div {
-            font-size: 48px; /* Icona di upload */
+            font-size: 48px;
         }
 
         /* Selettore anno */
         .stNumberInput input {
-            width: 700px;
+            width: 192px;
             height: 48px;
             border-radius: 8px;
             padding: 8px;
@@ -93,10 +84,24 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Carica i file necessari all'inizio dell'app
+try:
+    # File per i corsi
+    df_ateco = pd.read_excel("df_ateco.xlsx")
+    df_aggiornamento = pd.read_excel("df_aggiornamento.xlsx")
+    df_mappa_corsi = pd.read_excel("df_mappa_corsi.xlsx")
+    df_periodo_gruppi = pd.read_excel("df_periodo_gruppi.xlsx")
+
+    # File per i documenti
+    df_mappa_documenti = pd.read_excel("MappaDocumenti.xlsx")
+    df_periodo_documenti = pd.read_excel("PeriodicitaDocumenti.xlsx")
+except Exception as e:
+    st.error(f"Errore durante il caricamento dei file di supporto: {e}")
+
 # Container principale
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# Title and subtitle with enhanced styling
+# Titolo e sottotitolo
 st.markdown("""
     <div style="text-align: center;">
         <span style="font-size: 3rem;">🔮</span>
@@ -105,34 +110,33 @@ st.markdown("""
     <div class="subtitle-text">Scegli cosa vuoi filtrare</div>
 """, unsafe_allow_html=True)
 
-# Section selector with improved layout
-st.markdown('<div class="section-box">', unsafe_allow_html=True)
-col1, col2, col3 = st.columns([1, 2, 1])
+# Contenitore centrato per i pulsanti
+st.markdown('<div class="button-container">', unsafe_allow_html=True)
+col1, col2 = st.columns(2)
+with col1:
+    formazione = st.button("📚 Formazione", key="formazione")
 with col2:
-    # Create two buttons side by side
-    col_button1, col_button2 = st.columns(2, gap="medium")
-    with col_button1:
-        formazione = st.button("📚 Formazione", key="formazione")
-    with col_button2:
-        documenti = st.button("📄 Documenti", key="documenti")
+    documenti = st.button("📄 Documenti", key="documenti")
 
-    if formazione:
-        st.session_state["sezione_selezionata"] = "Formazione"
-    if documenti:
-        st.session_state["sezione_selezionata"] = "Documenti"
+# Determina la sezione selezionata
+if "sezione_selezionata" not in st.session_state:
+    st.session_state["sezione_selezionata"] = "Formazione"
+if formazione:
+    st.session_state["sezione_selezionata"] = "Formazione"
+if documenti:
+    st.session_state["sezione_selezionata"] = "Documenti"
 
-    st.markdown(f"<h3 style='text-align: center; color: #FF4B4B;'>Sezione: {st.session_state['sezione_selezionata']}</h3>", 
-                unsafe_allow_html=True)
+st.markdown(f"<h3 style='text-align: center; color: #FF4B4B;'>Sezione: {st.session_state['sezione_selezionata']}</h3>", 
+            unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# File upload and year selection section
+# File upload e selettore anno
 st.markdown('<div class="section-box">', unsafe_allow_html=True)
 file_caricato = st.file_uploader(
     f"Carica il file {st.session_state['sezione_selezionata'].lower()} da filtrare",
     type="xlsx",
     help="Seleziona un file Excel (.xlsx)"
 )
-
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     anno_riferimento = st.number_input(
@@ -145,7 +149,7 @@ with col2:
     )
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Processing functions
+# Funzioni di elaborazione
 @st.cache_data
 def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
     df_corsi = pd.read_excel(file_corsi)
@@ -228,14 +232,14 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti,
     
     return df_scadenza
 
-# Function to convert DataFrame to Excel
+# Funzione per convertire il DataFrame in Excel
 def convert_df_to_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False)
     return output.getvalue()
 
-# Generate file based on section selection
+# Pulsante per generare il file
 st.markdown('<div class="section-box">', unsafe_allow_html=True)
 if st.button("🚀 GENERA FILE", use_container_width=True):
     if file_caricato:
