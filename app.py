@@ -14,14 +14,16 @@ st.set_page_config(
 st.markdown("""
     <style>
         body {
-            background-color: white; /* Qui impostiamo lo sfondo bianco */
+            background-color: white;
         }
         /* Altri stili personalizzati */
-        .main{
+        .main {  # Errore: indentatura inattesa
             padding: 1rem;
         }
-        </style>
+    </style>
 """, unsafe_allow_html=True)
+
+# ... resto del tuo codice
         .main {
             padding: 1rem;
         }
