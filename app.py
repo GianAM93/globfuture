@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import xlsxwriter
+import os
 
 # Page configuration
 st.set_page_config(
@@ -13,14 +14,12 @@ st.set_page_config(
 # Custom CSS for styling
 st.markdown("""
     <style>
-        /* Container principale */
         .main-container {
             max-width: 768px;
             padding: 32px;
             margin: auto;
         }
 
-        /* Titolo */
         .title-text {
             font-size: 36px;
             font-weight: bold;
@@ -31,7 +30,6 @@ st.markdown("""
             -webkit-text-fill-color: transparent;
         }
 
-        /* Sottotitolo */
         .subtitle-text {
             font-size: 18px;
             color: #666666;
@@ -39,12 +37,11 @@ st.markdown("""
             margin-bottom: 32px;
         }
 
-        /* Pulsanti */
         .stButton button {
             padding: 12px 24px;
             border-radius: 8px;
             height: 48px;
-            margin-right: 16px; /* Spazio tra i pulsanti */
+            margin-right: 16px;
             background-color: #FF4B4B;
             color: white;
             transition: all 0.3s ease;
@@ -53,7 +50,6 @@ st.markdown("""
             background-color: #FF2B4B;
         }
 
-        /* Area drag & drop */
         .stFileUploader {
             width: 100%;
             border: 4px dashed #cccccc;
@@ -65,7 +61,6 @@ st.markdown("""
             font-size: 48px;
         }
 
-        /* Selettore anno */
         .stNumberInput input {
             width: 192px;
             height: 48px;
@@ -74,7 +69,6 @@ st.markdown("""
             text-align: center;
         }
 
-        /* Pulsante "Genera file" */
         .generate-button button {
             padding: 16px 32px;
             font-size: 18px;
@@ -84,19 +78,28 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Carica i file necessari all'inizio dell'app
-try:
-    # File per i corsi
-    df_ateco = pd.read_excel("df_ateco.xlsx")
-    df_aggiornamento = pd.read_excel("df_aggiornamento.xlsx")
-    df_mappa_corsi = pd.read_excel("df_mappa_corsi.xlsx")
-    df_periodo_gruppi = pd.read_excel("df_periodo_gruppi.xlsx")
+# Percorso della cartella dei file di supporto
+data_folder = "data"
 
-    # File per i documenti
-    df_mappa_documenti = pd.read_excel("MappaDocumenti.xlsx")
-    df_periodo_documenti = pd.read_excel("PeriodicitaDocumenti.xlsx")
-except Exception as e:
-    st.error(f"Errore durante il caricamento dei file di supporto: {e}")
+# Funzione per caricare i file e gestire errori
+def carica_file_excel(nome_file):
+    percorso_file = os.path.join(data_folder, nome_file)
+    try:
+        return pd.read_excel(percorso_file)
+    except FileNotFoundError:
+        st.error(f"Errore: il file '{nome_file}' non è stato trovato nella cartella '{data_folder}'.")
+
+# Caricamento dei file di supporto con nomi corretti
+df_ateco = carica_file_excel("AziendeAteco.xlsx")
+df_aggiornamento = carica_file_excel("Corso_Aggiornamento.xlsx")
+df_mappa_corsi = carica_file_excel("MappaCorsi.xlsx")
+df_periodo_gruppi = carica_file_excel("PeriodoGruppo.xlsx")
+df_mappa_documenti = carica_file_excel("MappaDocumenti.xlsx")
+df_periodo_documenti = carica_file_excel("PeriodicitaDocumenti.xlsx")
+
+# Controllo che i DataFrame siano stati caricati
+if any(df is None for df in [df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, df_mappa_documenti, df_periodo_documenti]):
+    st.stop()  # Interrompe l'applicazione se manca un file
 
 # Container principale
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
@@ -155,11 +158,9 @@ def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_pe
     df_corsi = pd.read_excel(file_corsi)
     df_corsi_cleaned = df_corsi[['TipoCorso', 'DataCorso', 'RagioneSociale', 'Dipendente', 'Localita']]
     
-    # Show progress
     progress_bar = st.progress(0)
     status_text = st.empty()
     
-    # Merge operations with progress updates
     status_text.text("Elaborazione dati ATECO...")
     df_corsi_ateco = pd.merge(df_corsi_cleaned, df_ateco, how='left', on='RagioneSociale')
     progress_bar.progress(25)
@@ -168,7 +169,6 @@ def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_pe
     df_corsi_mappati = pd.merge(df_corsi_ateco, df_mappa_corsi, how='left', on='TipoCorso')
     progress_bar.progress(50)
     
-    # ATECO processing
     df_corsi_mappati['CodATECO'] = df_corsi_mappati['CodATECO'].astype(str)
     settore_edile = df_corsi_mappati['CodATECO'].str.startswith(('41', '42', '43'))
     df_corsi_mappati.loc[settore_edile & df_corsi_mappati['GruppoCorso'].str.contains('Specifica', case=False), 'GruppoCorso'] = 'SpecificaEdile'
@@ -178,7 +178,6 @@ def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_pe
     df_corsi_completo['AnnoScadenza'] = df_corsi_completo['DataCorso'].apply(lambda x: x.year) + df_corsi_completo['PeriodicitaCorso']
     progress_bar.progress(75)
     
-    # Final processing
     df_scadenza = df_corsi_completo[df_corsi_completo['AnnoScadenza'] == anno_riferimento]
     df_scadenza = df_scadenza.drop_duplicates(subset=['Dipendente', 'RagioneSociale', 'GruppoCorso'], keep='first')
     df_scadenza['DataCorso'] = pd.to_datetime(df_scadenza['DataCorso']).apply(lambda x: x.replace(year=anno_riferimento))
@@ -208,16 +207,7 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti,
     df_documenti_mappati = pd.merge(df_documenti_cleaned, df_mappa_documenti, how='left', left_on='Documenti', right_on='TipoDocumento')
     progress_bar.progress(66)
     
-    if 'GruppoDocumenti' not in df_documenti_mappati.columns:
-        st.error("Errore: 'GruppoDocumenti' non trovato dopo la mappatura dei documenti.")
-        return pd.DataFrame()
-        
     df_documenti_completo = pd.merge(df_documenti_mappati, df_periodo_documenti, how='left', on='GruppoDocumenti')
-    
-    if 'PeriodicitaDoc' not in df_documenti_completo.columns:
-        st.error("Errore: 'PeriodicitaDoc' non trovato dopo la mappatura della periodicità.")
-        return pd.DataFrame()
-        
     df_documenti_completo['AnnoScadenza'] = df_documenti_completo['Data'].apply(lambda x: x.year) + df_documenti_completo['PeriodicitaDoc']
     df_scadenza = df_documenti_completo[df_documenti_completo['AnnoScadenza'] == anno_riferimento]
     df_scadenza = df_scadenza.drop_duplicates(subset=['RagioneSociale', 'GruppoDocumenti'], keep='first')
@@ -232,14 +222,12 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti,
     
     return df_scadenza
 
-# Funzione per convertire il DataFrame in Excel
 def convert_df_to_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False)
     return output.getvalue()
 
-# Pulsante per generare il file
 st.markdown('<div class="section-box">', unsafe_allow_html=True)
 if st.button("🚀 GENERA FILE", use_container_width=True):
     if file_caricato:
