@@ -9,9 +9,6 @@ st.set_page_config(
     page_icon="🔮",
     layout="wide"
 )
-
-# ... resto del tuo codice
-
 # Custom CSS for better styling
 st.markdown("""
     <style>
