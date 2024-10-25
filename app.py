@@ -64,7 +64,7 @@ elif documenti_clicked:
 
 sezione_corrente = st.session_state["sezione_selezionata"]
 
-# Rimuovi la linea di separazione e aumenta l’altezza dell’area di caricamento
+# Area di caricamento file e selettore anno
 file_caricato = st.file_uploader(
     f"Carica il file {sezione_corrente.lower()} da filtrare",
     type="xlsx",
@@ -77,21 +77,23 @@ anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1
 
 # Pulsante genera file centrato
 st.markdown("<div style='display: flex; justify-content: center; margin-top: 20px;'>", unsafe_allow_html=True)
-if st.button("GENERA FILE", key="genera_file_button"):
+if st.button("GENERA FILE", key=f"genera_file_button_{sezione_corrente}"):
     if file_caricato:
         if sezione_corrente == "Formazione":
             st.write("Elaborazione del file di formazione...")
+            # Codice specifico per processare il file di formazione
+            df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
+            excel_finale = convert_df_to_excel(df_finale)
+            st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
         elif sezione_corrente == "Documenti":
             st.write("Elaborazione del file di documenti...")
+            # Codice specifico per processare il file di documenti
+            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
+            excel_finale = convert_df_to_excel(df_finale)
+            st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
     else:
         st.error("Carica un file prima di generare.")
 st.markdown("</div>", unsafe_allow_html=True)
-
-# Determina la sezione corrente in base al pulsante cliccato
-sezione_corrente = st.session_state["sezione_selezionata"]
-
-# Caricamento file e selezione anno senza linea separatrice
-file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader", label_visibility="collapsed")
 
 # Funzione per processare i dati dei corsi
 def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
@@ -140,18 +142,3 @@ def convert_df_to_excel(df):
         df.to_excel(writer, index=False)
     return output.getvalue()
 
-# Genera file in base alla selezione della sezione
-col4, col5, col6 = st.columns([1, 1, 1])
-with col5:
-    if st.button("GENERA FILE", key=f"genera_file_button_{sezione_corrente}"):
-        if file_caricato:
-            if sezione_corrente == "Formazione":
-                df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
-                excel_finale = convert_df_to_excel(df_finale)
-                st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
-            elif sezione_corrente == "Documenti":
-                df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
-                excel_finale = convert_df_to_excel(df_finale)
-                st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
-        else:
-            st.error("Carica un file prima di generare.")
