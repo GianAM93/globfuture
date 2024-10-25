@@ -21,24 +21,18 @@ if "sezione_selezionata" not in st.session_state:
 def seleziona_sezione(sezione):
     st.session_state["sezione_selezionata"] = sezione
 
-# Layout con due pulsanti centrali
-col1, col2, col3 = st.columns([1, 1, 1])
+# Layout con due pulsanti affiancati
+col1, col2 = st.columns([1, 1], gap="medium")
 with col1:
-    pass
+    formazione = st.button("**Formazione**", use_container_width=True, on_click=seleziona_sezione, args=("Formazione",))
 with col2:
-    # Pulsanti per la selezione
-    formazione = st.button("Formazione", use_container_width=True, on_click=seleziona_sezione, args=("Formazione",))
-    documenti = st.button("Documenti", use_container_width=True, on_click=seleziona_sezione, args=("Documenti",))
-with col3:
-    pass
+    documenti = st.button("**Documenti**", use_container_width=True, on_click=seleziona_sezione, args=("Documenti",))
 
-# Variabile per sapere se è stata selezionata formazione o documenti
+# Determina la sezione corrente in base al pulsante cliccato
 sezione_corrente = st.session_state["sezione_selezionata"]
-st.write(f"Hai selezionato: **{sezione_corrente}**")
 
-# Area di caricamento file e selezione anno di riferimento
-st.write("---")  # linea di separazione
-file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader")
+# Caricamento file e selezione anno senza linea separatrice
+file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader", label_visibility="collapsed", height=200)
 anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
 
 # Funzione per processare i dati dei corsi
@@ -79,7 +73,6 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti,
     df_scadenza['Data'] = pd.to_datetime(df_scadenza['Data'], format='%d-%m-%Y').apply(lambda x: x.replace(year=anno_riferimento))
     df_scadenza['Data'] = df_scadenza['Data'].dt.strftime('%d-%m-%Y')
     df_scadenza = df_scadenza.drop(columns=['Documenti', 'TipoDocumento', 'PeriodicitaDoc', 'AnnoScadenza'], errors='ignore')
-
     return df_scadenza
 
 # Funzione per convertire DataFrame in Excel
@@ -90,14 +83,16 @@ def convert_df_to_excel(df):
     return output.getvalue()
 
 # Genera file in base alla selezione della sezione
-if st.button("GENERA FILE"):
-    if sezione_corrente == "Formazione" and file_caricato:
-        df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
-        excel_finale = convert_df_to_excel(df_finale)
-        st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
-    elif sezione_corrente == "Documenti" and file_caricato:
-        df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
-        excel_finale = convert_df_to_excel(df_finale)
-        st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
-    else:
-        st.error("Carica un file valido per generare l'output.")
+col4, col5, col6 = st.columns([1, 1, 1])
+with col5:
+    if st.button("GENERA FILE", key="genera_file_button"):
+        if sezione_corrente == "Formazione" and file_caricato:
+            df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
+            excel_finale = convert_df_to_excel(df_finale)
+            st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx")
+        elif sezione_corrente == "Documenti" and file_caricato:
+            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
+            excel_finale = convert_df_to_excel(df_finale)
+            st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx")
+        else:
+            st.error("Carica un file valido per generare l'output.")
