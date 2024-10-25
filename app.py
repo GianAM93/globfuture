@@ -93,7 +93,7 @@ def carica_file_excel(nome_file):
 df_ateco = carica_file_excel("AziendeAteco.xlsx")
 df_aggiornamento = carica_file_excel("Corso_Aggiornamento.xlsx")
 df_mappa_corsi = carica_file_excel("MappaCorsi.xlsx")
-df_periodo_gruppi = carica_file_excel("PeriodoGruppo.xlsx")
+df_periodo_gruppi = carica_file_excel("PeriodoGruppi.xlsx")
 df_mappa_documenti = carica_file_excel("MappaDocumenti.xlsx")
 df_periodo_documenti = carica_file_excel("PeriodicitaDocumenti.xlsx")
 
