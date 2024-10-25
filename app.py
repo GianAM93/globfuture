@@ -39,19 +39,28 @@ st.markdown("""
             margin-bottom: 32px;
         }
 
-        /* Pulsanti */
-        .stButton button {
-            padding: 12px 24px;
-            border-radius: 8px;
-            height: 80px;
-            margin-right: 16px; /* Spazio tra i pulsanti */
-            background-color: #FF4B4B;
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .stButton button:hover {
-            background-color: #FF2B2B;
-        }
+/* Contenitore per i pulsanti */
+.button-container {
+    text-align: center;
+    margin-bottom: 32px; /* Spazio sotto il container */
+}
+
+/* Pulsanti */
+.stButton button {
+    width: 150px; /* Larghezza del pulsante */
+    height: 48px; /* Altezza del pulsante */
+    padding: 12px 24px; /* Padding interno */
+    border-radius: 8px;
+    margin: 8px; /* Spazio tra i pulsanti */
+    background-color: #FF4B4B;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.stButton button:hover {
+    background-color: #FF2B2B;
+}
+
 
         /* Area drag & drop */
         .stFileUploader {
