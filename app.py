@@ -143,14 +143,16 @@ def convert_df_to_excel(df):
 # Genera file in base alla selezione della sezione
 col4, col5, col6 = st.columns([1, 1, 1])
 with col5:
-    if st.button("GENERA FILE", key="genera_file_button"):
-        if sezione_corrente == "Formazione" and file_caricato:
+   # Pulsante di generazione file con chiave unica per la sezione corrente
+if st.button("GENERA FILE", key=f"genera_file_button_{sezione_corrente}"):
+    if file_caricato:
+        if sezione_corrente == "Formazione":
             df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
             excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file formazione", data=excel_finale, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
-        elif sezione_corrente == "Documenti" and file_caricato:
+            st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
+        elif sezione_corrente == "Documenti":
             df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
             excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file documenti", data=excel_finale, file_name=f"Documenti_scadenza_{anno_riferimento}_completo.xlsx")
-        else:
-            st.error("Carica un file valido per generare l'output.")
+            st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
+    else:
+        st.error("Carica un file prima di generare.")
