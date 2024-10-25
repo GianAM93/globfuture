@@ -5,38 +5,37 @@ import xlsxwriter
 
 # CSS personalizzato per colori e stile
 st.markdown(
-    """
+    f"""
     <style>
     /* Colore di sfondo e testo della pagina */
-    body {
+    body {{
         background-color: white;
         color: #4A5568;
-    }
+    }}
 
     /* Stile titolo */
-    h1 {
+    h1 {{
         color: #4A5568;
         text-align: center;
         font-family: sans-serif;
         font-weight: bold;
-    }
+    }}
 
-    /* Stile dei pulsanti non cliccati */
-    .stButton > button {
+    /* Stile dei pulsanti non selezionati */
+    .stButton > button {{
         color: #FF6B6B;
         border: 2px solid #FF6B6B;
         background-color: transparent;
         font-weight: bold;
         width: 100%;
-    }
+    }}
 
-    /* Stile dei pulsanti cliccati */
-    .stButton > button[selected] {
+    /* Colore del pulsante selezionato */
+    .stButton > button.selected {{
         background-color: #FF6B6B;
         color: white;
         font-weight: bold;
-    }
-
+    }}
     </style>
     """,
     unsafe_allow_html=True
@@ -48,49 +47,46 @@ st.markdown("<h1>SCOPRI IL FUTURO! 😉</h1>", unsafe_allow_html=True)
 # Pulsanti per selezione tra formazione e documenti
 col1, col2 = st.columns([1, 1])
 
-with col1:
-    formazione_clicked = st.button("Formazione", key="formazione_btn")
-with col2:
-    documenti_clicked = st.button("Documenti", key="documenti_btn")
-
 # Imposta lo stato del pulsante selezionato
 if "sezione_selezionata" not in st.session_state:
     st.session_state["sezione_selezionata"] = "Formazione"  # Default
 
-if formazione_clicked:
-    st.session_state["sezione_selezionata"] = "Formazione"
-elif documenti_clicked:
-    st.session_state["sezione_selezionata"] = "Documenti"
+# Funzione per controllare lo stile CSS del pulsante selezionato
+def button_style(sezione):
+    if st.session_state["sezione_selezionata"] == sezione:
+        return "selected"
+    return ""
+
+# Visualizzazione dei pulsanti con stile dinamico
+with col1:
+    if st.button("Formazione", key="formazione_btn", help="Formazione", args=("Formazione",)):
+        st.session_state["sezione_selezionata"] = "Formazione"
+with col2:
+    if st.button("Documenti", key="documenti_btn", help="Documenti", args=("Documenti",)):
+        st.session_state["sezione_selezionata"] = "Documenti"
 
 sezione_corrente = st.session_state["sezione_selezionata"]
 
-# Area di caricamento file e selettore anno
+# Caricamento file e selettore anno
 file_caricato = st.file_uploader(
     f"Carica il file {sezione_corrente.lower()} da filtrare",
     type="xlsx",
-    key=f"file_uploader_{sezione_corrente}",  # Chiave unica per ciascuna sezione
+    key=f"file_uploader_{sezione_corrente}",
     label_visibility="collapsed",
 )
 
 # Selettore per l'anno di riferimento
 anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
 
-# Pulsante genera file centrato
-st.markdown("<div style='display: flex; justify-content: center; margin-top: 20px;'>", unsafe_allow_html=True)
+# Pulsante per generare file
 if st.button("GENERA FILE", key=f"genera_file_button_{sezione_corrente}"):
     if file_caricato:
         if sezione_corrente == "Formazione":
             st.write("Elaborazione del file di formazione...")
-            # Codice specifico per processare il file di formazione
-            df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
-            excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
+            # Codice per elaborare file di formazione
         elif sezione_corrente == "Documenti":
             st.write("Elaborazione del file di documenti...")
-            # Codice specifico per processare il file di documenti
-            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
-            excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
+            # Codice per elaborare file di documenti
     else:
         st.error("Carica un file prima di generare.")
 st.markdown("</div>", unsafe_allow_html=True)
