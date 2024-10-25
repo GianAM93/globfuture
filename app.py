@@ -70,7 +70,6 @@ file_caricato = st.file_uploader(
     type="xlsx",
     key=f"file_uploader_{sezione_corrente}",  # Chiave unica per ciascuna sezione
     label_visibility="collapsed",
-    height=300
 )
 
 # Selettore per l'anno di riferimento
