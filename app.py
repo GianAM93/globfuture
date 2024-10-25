@@ -41,8 +41,10 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti,
     df_scadenza = df_scadenza.drop_duplicates(subset=['RagioneSociale', 'GruppoDocumenti'], keep='first')
     df_scadenza['Data'] = pd.to_datetime(df_scadenza['Data'], format='%d-%m-%Y').apply(lambda x: x.replace(year=anno_riferimento))
     df_scadenza['Data'] = df_scadenza['Data'].dt.strftime('%d-%m-%Y')
+    df_scadenza = df_scadenza.drop(columns=['Documenti', 'TipoDocumento', 'PeriodicitaDoc', 'AnnoScadenza'], errors='ignore')
 
     return df_scadenza
+
 
 
 # Funzione per convertire DataFrame in Excel
