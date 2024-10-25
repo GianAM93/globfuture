@@ -3,7 +3,7 @@ import pandas as pd
 from io import BytesIO
 import xlsxwriter
 
-# CSS personalizzato
+# CSS personalizzato per colori e stile
 st.markdown(
     """
     <style>
@@ -21,8 +21,8 @@ st.markdown(
         font-weight: bold;
     }
 
-    /* Bottone non cliccato */
-    .stButton button {
+    /* Stile dei pulsanti non cliccati */
+    .stButton > button {
         color: #FF6B6B;
         border: 2px solid #FF6B6B;
         background-color: transparent;
@@ -30,7 +30,7 @@ st.markdown(
         width: 100%;
     }
 
-    /* Bottone cliccato */
+    /* Stile dei pulsanti cliccati */
     .stButton > button[selected] {
         background-color: #FF6B6B;
         color: white;
@@ -45,13 +45,13 @@ st.markdown(
 # Titolo
 st.markdown("<h1>SCOPRI IL FUTURO! 😉</h1>", unsafe_allow_html=True)
 
-# Selezione tra documenti e formazione con pulsanti stilizzati
+# Pulsanti per selezione tra formazione e documenti
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    formazione_clicked = st.button("Formazione", key="formazione")
+    formazione_clicked = st.button("Formazione", key="formazione_btn")
 with col2:
-    documenti_clicked = st.button("Documenti", key="documenti")
+    documenti_clicked = st.button("Documenti", key="documenti_btn")
 
 # Imposta lo stato del pulsante selezionato
 if "sezione_selezionata" not in st.session_state:
@@ -64,14 +64,21 @@ elif documenti_clicked:
 
 sezione_corrente = st.session_state["sezione_selezionata"]
 
-# Area di caricamento file, selezione anno e pulsante genera file
-file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader", label_visibility="collapsed")
+# Rimuovi la linea di separazione e aumenta l’altezza dell’area di caricamento
+file_caricato = st.file_uploader(
+    f"Carica il file {sezione_corrente.lower()} da filtrare",
+    type="xlsx",
+    key=f"file_uploader_{sezione_corrente}",  # Chiave unica per ciascuna sezione
+    label_visibility="collapsed",
+    height=300
+)
 
+# Selettore per l'anno di riferimento
 anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
 
 # Pulsante genera file centrato
 st.markdown("<div style='display: flex; justify-content: center; margin-top: 20px;'>", unsafe_allow_html=True)
-if st.button("GENERA FILE"):
+if st.button("GENERA FILE", key="genera_file_button"):
     if file_caricato:
         if sezione_corrente == "Formazione":
             st.write("Elaborazione del file di formazione...")
