@@ -10,101 +10,102 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for better styling
+# Custom CSS for styling
 st.markdown("""
     <style>
-        body {
-            background-color: white; /* Qui impostiamo lo sfondo bianco */
+        /* Container principale */
+        .main-container {
+            max-width: 768px;
+            padding: 32px;
+            margin: auto;
         }
-        /* Altri stili personalizzati */
-        .main {
-            padding: 1rem;
+
+        /* Titolo */
+        .title-text {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 32px;
+            background: linear-gradient(45deg, #FF4B4B, #FF8080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        /* Sottotitolo */
+        .subtitle-text {
+            font-size: 18px;
+            color: #666666;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        /* Pulsanti */
         .stButton button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            height: 48px;
+            margin-right: 16px; /* Spazio tra i pulsanti */
             background-color: #FF4B4B;
             color: white;
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
             transition: all 0.3s ease;
         }
         .stButton button:hover {
             background-color: #FF2B2B;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        div[data-testid="stToolbar"] {
-            display: none;
-        }
-        .title-text {
-            background: linear-gradient(45deg, #FF4B4B, #FF8080);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 3rem;
-            font-weight: bold;
+
+        /* Area drag & drop */
+        .stFileUploader {
+            width: 100%;
+            border: 4px dashed #cccccc;
+            border-radius: 8px;
+            padding: 32px;
             text-align: center;
-            margin-bottom: 1rem;
         }
-        .subtitle-text {
-            color: #666;
+        .stFileUploader label div {
+            font-size: 48px; /* Icona di upload */
+        }
+
+        /* Selettore anno */
+        .stNumberInput input {
+            width: 192px;
+            height: 48px;
+            border-radius: 8px;
+            padding: 8px;
             text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
         }
-        .section-box {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        .selector-box {
-            background-color: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-        /* Aggiungi qui il nuovo CSS per ridurre gli spazi */
-        .section-box, .stButton, .stFileUploader, .stNumberInput {
-            margin: 0px !important;
-            padding: 0px !important;
-            box-shadow: none !important; /* Rimuove l'ombra */
-        }
-        .stFileUploader, .stNumberInput, .stButton {
-            padding-top: 1rem !important;
-            padding-bottom: 1rem !important;
-        }
-        .stColumns {
-            gap: 0rem !important;
+
+        /* Pulsante "Genera file" */
+        .generate-button button {
+            padding: 16px 32px;
+            font-size: 18px;
+            border-radius: 8px;
+            height: 56px;
         }
     </style>
 """, unsafe_allow_html=True)
 
-
-# Initialize session state
-if "sezione_selezionata" not in st.session_state:
-    st.session_state["sezione_selezionata"] = "Formazione"
+# Container principale
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 # Title and subtitle with enhanced styling
 st.markdown("""
     <div style="text-align: center;">
-    <span class="title-text">SCOPRI IL FUTURO!</span>
-        <span style="font-size: 3rem;">😂</span> <!-- Emoji separata per mantenere il colore originale -->
+        <span style="font-size: 3rem;">🔮</span>
+        <span class="title-text">SCOPRI IL FUTURO!</span>
     </div>
     <div class="subtitle-text">Scegli cosa vuoi filtrare</div>
 """, unsafe_allow_html=True)
-
 
 # Section selector with improved layout
 st.markdown('<div class="section-box">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     # Create two buttons side by side
-    cols_button1, cols_button2 = st.columns(2)
-    with cols_button1:
-        formazione = st.button("📚 Formazione", use_container_width=True, 
-                             help="Clicca per gestire la formazione")
-    with cols_button2:
-        documenti = st.button("📄 Documenti", use_container_width=True,
-                            help="Clicca per gestire i documenti")
+    col_button1, col_button2 = st.columns(2, gap="medium")
+    with col_button1:
+        formazione = st.button("📚 Formazione", key="formazione")
+    with col_button2:
+        documenti = st.button("📄 Documenti", key="documenti")
 
     if formazione:
         st.session_state["sezione_selezionata"] = "Formazione"
