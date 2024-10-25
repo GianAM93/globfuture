@@ -60,7 +60,7 @@ if opzione == "Corsi":
 elif opzione == "Documenti":
     file_documenti = st.file_uploader("Carica il file dei documenti (Documenti_yyyy.xlsx)", type="xlsx")
     df_mappa_documenti = pd.read_excel("MappaDocumenti.xlsx")
-    df_periodo_documenti = pd.read_excel("PeriodoDocumenti.xlsx")
+    df_periodo_documenti = pd.read_excel("PeriodicitaDocumenti.xlsx")
 
 # Input per l'anno di riferimento
 anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
