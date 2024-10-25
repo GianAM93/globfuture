@@ -89,10 +89,10 @@ with col5:
         if sezione_corrente == "Formazione" and file_caricato:
             df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
             excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx")
+            st.download_button("Scarica file formazione", data=excel_finale, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
         elif sezione_corrente == "Documenti" and file_caricato:
             df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
             excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx")
+            st.download_button("Scarica file documenti", data=excel_finale, file_name=f"Documenti_scadenza_{anno_riferimento}_completo.xlsx")
         else:
             st.error("Carica un file valido per generare l'output.")
