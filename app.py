@@ -3,11 +3,6 @@ import pandas as pd
 from io import BytesIO
 import xlsxwriter
 
-import streamlit as st
-import pandas as pd
-from io import BytesIO
-import xlsxwriter
-
 # CSS personalizzato
 st.markdown(
     """
