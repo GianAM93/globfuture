@@ -29,15 +29,20 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti,
     df_documenti = pd.read_excel(file_documenti)
     df_documenti_cleaned = df_documenti[['Documenti', 'Data', 'RagioneSociale']]
     df_documenti_mappati = pd.merge(df_documenti_cleaned, df_mappa_documenti, how='left', left_on='Documenti', right_on='TipoDocumento')
+    if 'GruppoDocumenti' not in df_documenti_mappati.columns:
+        st.error("Errore: 'GruppoDocumenti' non trovato dopo la mappatura dei documenti.")
+        return pd.DataFrame()  # Restituisce un DataFrame vuoto per evitare errori successivi
     df_documenti_completo = pd.merge(df_documenti_mappati, df_periodo_documenti, how='left', on='GruppoDocumenti')
-    df_documenti_completo['AnnoScadenza'] = df_documenti_completo['Data'].apply(lambda x: x.year) + df_documenti_completo['Periodicita']
+    if 'PeriodicitaDoc' not in df_documenti_completo.columns:
+        st.error("Errore: 'PeriodicitaDoc' non trovato dopo la mappatura della periodicità.")
+        return pd.DataFrame()  # Restituisce un DataFrame vuoto per evitare errori successivi
+    df_documenti_completo['AnnoScadenza'] = df_documenti_completo['Data'].apply(lambda x: x.year) + df_documenti_completo['PeriodicitaDoc']
     df_scadenza = df_documenti_completo[df_documenti_completo['AnnoScadenza'] == anno_riferimento]
     df_scadenza = df_scadenza.drop_duplicates(subset=['RagioneSociale', 'GruppoDocumenti'], keep='first')
     df_scadenza['Data'] = pd.to_datetime(df_scadenza['Data'], format='%d-%m-%Y').apply(lambda x: x.replace(year=anno_riferimento))
     df_scadenza['Data'] = df_scadenza['Data'].dt.strftime('%d-%m-%Y')
 
     return df_scadenza
-
 
 
 # Funzione per convertire DataFrame in Excel
