@@ -27,15 +27,17 @@ def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_pe
 # Funzione per processare i dati dei documenti
 def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti, anno_riferimento):
     df_documenti = pd.read_excel(file_documenti)
-    df_documenti_cleaned = df_documenti[['TipoDocumento', 'DataDocumento', 'CodiceAzienda', 'AziendaChiusa']]
-    df_documenti_mappati = pd.merge(df_documenti_cleaned, df_mappa_documenti, how='left', on='TipoDocumento')
+    df_documenti_cleaned = df_documenti[['Documenti', 'Data', 'RagioneSociale']]
+    df_documenti_mappati = pd.merge(df_documenti_cleaned, df_mappa_documenti, how='left', left_on='Documenti', right_on='TipoDocumento')
     df_documenti_completo = pd.merge(df_documenti_mappati, df_periodo_documenti, how='left', on='TipoDocumento')
-    df_documenti_completo['AnnoScadenza'] = df_documenti_completo['DataDocumento'].apply(lambda x: x.year) + df_documenti_completo['PeriodicitaDocumento']
+    df_documenti_completo['AnnoScadenza'] = pd.to_datetime(df_documenti_completo['Data']).apply(lambda x: x.year) + df_documenti_completo['PeriodicitaDocumento']
     df_scadenza = df_documenti_completo[df_documenti_completo['AnnoScadenza'] == anno_riferimento]
-    df_scadenza = df_scadenza.drop_duplicates(subset=['CodiceAzienda', 'TipoDocumento'], keep='first')
-    df_scadenza['DataDocumento'] = pd.to_datetime(df_scadenza['DataDocumento'], format='%d-%m-%Y').apply(lambda x: x.replace(year=anno_riferimento))
-    df_scadenza['DataDocumento'] = df_scadenza['DataDocumento'].dt.strftime('%d-%m-%Y')
+    df_scadenza = df_scadenza.drop_duplicates(subset=['RagioneSociale', 'TipoDocumento'], keep='first')
+    df_scadenza['Data'] = pd.to_datetime(df_scadenza['Data']).apply(lambda x: x.replace(year=anno_riferimento))
+    df_scadenza['Data'] = df_scadenza['Data'].dt.strftime('%d-%m-%Y')
+
     return df_scadenza
+
 
 # Funzione per convertire DataFrame in Excel
 def convert_df_to_excel(df):
