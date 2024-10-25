@@ -10,7 +10,7 @@ st.markdown(
     /* Colore di sfondo e testo della pagina */
     .main {
         background-color: white;
-        color: #4A5568;
+        color: #FFFFFF;
     }
 
     /* Stile titolo */
