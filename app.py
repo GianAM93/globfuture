@@ -84,7 +84,7 @@ if "sezione_selezionata" not in st.session_state:
     st.session_state["sezione_selezionata"] = "Formazione"
 
 # Title and subtitle with enhanced styling
-st.markdown('<div class="title-text">SCOPRI IL FUTURO! 🔮</div>', unsafe_allow_html=True)
+st.markdown('<div class="title-text">SCOPRI IL FUTURO!😂</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle-text">Scegli cosa vuoi filtrare</div>', unsafe_allow_html=True)
 
 # Section selector with improved layout
