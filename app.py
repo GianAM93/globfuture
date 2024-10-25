@@ -10,6 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom CSS for better styling
 st.markdown("""
     <style>
         body {
@@ -60,6 +61,19 @@ st.markdown("""
             padding: 1.5rem;
             border-radius: 10px;
             margin-bottom: 1rem;
+        }
+        /* Aggiungi qui il nuovo CSS per ridurre gli spazi */
+        .section-box, .stButton, .stFileUploader, .stNumberInput {
+            margin: 0px !important;
+            padding: 0px !important;
+            box-shadow: none !important; /* Rimuove l'ombra */
+        }
+        .stFileUploader, .stNumberInput, .stButton {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+        .stColumns {
+            gap: 0rem !important;
         }
     </style>
 """, unsafe_allow_html=True)
