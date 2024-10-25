@@ -56,7 +56,7 @@ st.markdown("""
         /* Area drag & drop */
         .stFileUploader {
             width: 100%;
-            max-width: 700pz;
+            max-width: 700px;
             border: 4px dashed #cccccc;
             border-radius: 8px;
             padding: 32px;
