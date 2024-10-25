@@ -22,8 +22,6 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-        .main {
-            padding: 1rem;
         }
         .stButton button {
             background-color: #FF4B4B;
