@@ -8,7 +8,7 @@ st.markdown(
     """
     <style>
     /* Colore di sfondo e testo della pagina */
-    body {
+    .main {
         background-color: white;
         color: #4A5568;
     }
