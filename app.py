@@ -32,7 +32,7 @@ with col2:
 sezione_corrente = st.session_state["sezione_selezionata"]
 
 # Caricamento file e selezione anno senza linea separatrice
-file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader", label_visibility="collapsed", height=200)
+file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader", label_visibility="collapsed")
 anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
 
 # Funzione per processare i dati dei corsi
