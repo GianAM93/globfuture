@@ -1,112 +1,88 @@
-# Importa le librerie necessarie
 import streamlit as st
 import pandas as pd
 from io import BytesIO
 import xlsxwriter
 
-# Funzione per impostare lo stile della pagina
-def set_page_style(bg_color, font_family='Arial'):
-    st.markdown(
-        f"""
-        <style>
-        .main {{
-            background-color: {bg_color};
-            font-family: {font_family};
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Logo e titolo con font personalizzato
+# CSS personalizzato per colori e stile
 st.markdown(
     """
     <style>
-    .logo-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 20px;
+    /* Colore di sfondo e testo della pagina */
+    body {
+        background-color: white;
+        color: #4A5568;
     }
-    .title {
-        font-size: 36px;
+
+    /* Stile titolo */
+    h1 {
+        color: #4A5568;
         text-align: center;
+        font-family: sans-serif;
+        font-weight: bold;
+    }
+
+    /* Stile dei pulsanti non selezionati */
+    .stButton > button {
+        color: #FF6B6B;
+        border: 2px solid #FF6B6B;
+        background-color: transparent;
+        font-weight: bold;
+        width: 100%;
+    }
+
+    /* Colore del pulsante selezionato */
+    .stButton > button.selected {
+        background-color: #FF6B6B;
+        color: white;
+        font-weight: bold;
     }
     </style>
-    <div class="logo-container">
-        <img src="LOGO_URL" width="150">
-    </div>
-    <h1 class="title">Gestione Corsi e Scadenze</h1>
     """,
     unsafe_allow_html=True
 )
 
-# Funzione per processare i dati
-def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
-    # Processamento dati per corsi...
-    pass  # sostituisci con il codice esistente
+# Titolo
+st.markdown("<h1>SCOPRI IL FUTURO! 😉</h1>", unsafe_allow_html=True)
 
-def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti, anno_riferimento):
-    # Processamento dati per documenti...
-    pass  # sostituisci con il codice esistente
+# Inizializzazione dello stato per la selezione della sezione
+if "sezione_selezionata" not in st.session_state:
+    st.session_state["sezione_selezionata"] = "Formazione"  # Default
 
-# Funzione per convertire DataFrame in Excel
-def convert_df_to_excel(df):
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False)
-    return output.getvalue()
+# Funzione per controllare se il pulsante è selezionato
+def is_selected(sezione):
+    return "selected" if st.session_state["sezione_selezionata"] == sezione else ""
 
-# Funzione per dividere il DataFrame per GruppoCorso e salvarlo in un file Excel
-def save_groups_to_excel(df):
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        for gruppo, group_data in df.groupby('GruppoCorso'):
-            group_data.drop(columns=['Localita', 'CodATECO', 'GruppoCorso'], inplace=True)
-            group_data.to_excel(writer, sheet_name=gruppo[:31], index=False)
-    return output.getvalue()
+# Pulsanti per selezione tra formazione e documenti
+col1, col2 = st.columns([1, 1])
 
-# Inizializza il tipo di file selezionato
-file_type = st.session_state.get("file_type", None)
-
-# Colori per le modalità
-bg_colors = {"formazione": "#d1e7ff", "documenti": "#ffe6cc", "generazione": "#d4edda"}
-set_page_style(bg_color=bg_colors["formazione"] if file_type == "formazione" else bg_colors["documenti"])
-
-# Pulsanti per selezionare "Formazione" o "Documenti"
-col1, col2 = st.columns(2)
 with col1:
-    if st.button("Formazione"):
-        st.session_state["file_type"] = "formazione"
-        set_page_style(bg_color=bg_colors["formazione"])
+    if st.button("Formazione", key="formazione_btn"):
+        st.session_state["sezione_selezionata"] = "Formazione"
 with col2:
-    if st.button("Documenti"):
-        st.session_state["file_type"] = "documenti"
-        set_page_style(bg_color=bg_colors["documenti"])
+    if st.button("Documenti", key="documenti_btn"):
+        st.session_state["sezione_selezionata"] = "Documenti"
 
-# Caricamento del file e altre impostazioni in base alla selezione
-if st.session_state["file_type"] == "formazione":
-    # Caricamento file e impostazioni per la formazione
-    file_corsi = st.file_uploader("Carica il file dei corsi (Corsi_yyyy.xlsx)", type="xlsx")
-    # (Carica i file di mappatura per Formazione)
-    # Quando si preme il pulsante "Genera File" e il file è caricato, mostra un feedback colorato
-    if st.button("Genera File"):
-        if file_corsi:
-            set_page_style(bg_color=bg_colors["generazione"])
-            # Chiama le funzioni di processamento e scarica i file
-            # ...
-        else:
-            st.error("Carica il file dei corsi.")
+sezione_corrente = st.session_state["sezione_selezionata"]
 
-elif st.session_state["file_type"] == "documenti":
-    # Caricamento file e impostazioni per i documenti
-    file_documenti = st.file_uploader("Carica il file dei documenti (Documenti_yyyy.xlsx)", type="xlsx")
-    # (Carica i file di mappatura per Documenti)
-    # Quando si preme il pulsante "Genera File" e il file è caricato, mostra un feedback colorato
-    if st.button("Genera File"):
-        if file_documenti:
-            set_page_style(bg_color=bg_colors["generazione"])
-            # Chiama le funzioni di processamento e scarica i file
-            # ...
-        else:
-            st.error("Carica il file dei documenti.")
+# Caricamento file e selettore anno
+file_caricato = st.file_uploader(
+    f"Carica il file {sezione_corrente.lower()} da filtrare",
+    type="xlsx",
+    key=f"file_uploader_{sezione_corrente}",
+    label_visibility="collapsed",
+)
+
+# Selettore per l'anno di riferimento
+anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
+
+# Pulsante per generare file
+if st.button("GENERA FILE", key=f"genera_file_button_{sezione_corrente}"):
+    if file_caricato:
+        if sezione_corrente == "Formazione":
+            st.write("Elaborazione del file di formazione...")
+            # Codice per elaborare file di formazione
+        elif sezione_corrente == "Documenti":
+            st.write("Elaborazione del file di documenti...")
+            # Codice per elaborare file di documenti
+    else:
+        st.error("Carica un file prima di generare.")
