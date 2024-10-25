@@ -55,7 +55,7 @@ st.markdown("""
 
         /* Area drag & drop */
         .stFileUploader {
-            width: 100%;
+            width: 700px;
             border: 4px dashed #cccccc;
             border-radius: 8px;
             padding: 32px;
@@ -67,7 +67,7 @@ st.markdown("""
 
         /* Selettore anno */
         .stNumberInput input {
-            width: 192px;
+            width: 700px;
             height: 48px;
             border-radius: 8px;
             padding: 8px;
