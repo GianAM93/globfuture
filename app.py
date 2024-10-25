@@ -9,7 +9,7 @@ st.set_page_config(
     page_icon="🔮",
     layout="wide"
 )
-# Custom CSS for better styling
+
 st.markdown("""
     <style>
         body {
@@ -18,9 +18,6 @@ st.markdown("""
         /* Altri stili personalizzati */
         .main {
             padding: 1rem;
-        }
-        </style>
-""", unsafe_allow_html=True)
         }
         .stButton button {
             background-color: #FF4B4B;
@@ -66,6 +63,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
+
 
 # Initialize session state
 if "sezione_selezionata" not in st.session_state:
