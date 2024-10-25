@@ -5,12 +5,10 @@ from io import BytesIO
 import xlsxwriter
 
 # Funzione per processare i dati
-def processa_corsi(file_corsi, file_ateco, file_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
+def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
     # Carica i dati dal file caricato
     df_corsi = pd.read_excel(file_corsi)
-    df_ateco = pd.read_excel(file_ateco)
-    df_aggiornamento = pd.read_excel(file_aggiornamento)
-
+    
     # Pulizia iniziale dei dati di corsi
     df_corsi_cleaned = df_corsi[['TipoCorso', 'DataCorso', 'RagioneSociale', 'Dipendente', 'Localita']]
     
@@ -63,22 +61,22 @@ def save_groups_to_excel(df):
 # Interfaccia Streamlit
 st.title("Gestione Corsi e Scadenze")
 
-# Caricamento dei file
+# Caricamento del file principale (Corsi_yyyy.xlsx)
 file_corsi = st.file_uploader("Carica il file dei corsi (Corsi_yyyy.xlsx)", type="xlsx")
-file_ateco = st.file_uploader("Carica il file Aziende ATECO", type="xlsx")
-file_aggiornamento = st.file_uploader("Carica il file Corso Aggiornamento", type="xlsx")
 
-# Caricamento Google Sheet in DataFrame direttamente
-df_mappa_corsi = pd.read_excel("MappaCorsi.xlsx") # Converte i Google Sheets in .xlsx per caricarli localmente
-df_periodo_gruppi = pd.read_excel("PeriodoGruppi.xlsx") # Stesso approccio
+# Caricamento dei file di mappatura dal repository
+df_ateco = pd.read_excel("AziendeAteco.xlsx")
+df_aggiornamento = pd.read_excel("Corso_Aggiornamento.xlsx")
+df_mappa_corsi = pd.read_excel("MappaCorsi.xlsx")
+df_periodo_gruppi = pd.read_excel("PeriodoGruppi.xlsx")
 
 # Input per l'anno di riferimento
 anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
 
 # Esegui la generazione dei file
 if st.button("Genera File"):
-    if file_corsi and file_ateco and file_aggiornamento:
-        df_finale = processa_corsi(file_corsi, file_ateco, file_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
+    if file_corsi:
+        df_finale = processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
         
         # Converte e salva in Excel
         excel_finale = convert_df_to_excel(df_finale)
@@ -88,4 +86,4 @@ if st.button("Genera File"):
         excel_per_gruppo = save_groups_to_excel(df_finale)
         st.download_button("Scarica file diviso per gruppo", data=excel_per_gruppo, file_name=f'Programma_{anno_riferimento}_per_gruppo.xlsx')
     else:
-        st.error("Carica tutti i file richiesti.")
+        st.error("Carica il file dei corsi.")
