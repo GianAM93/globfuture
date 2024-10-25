@@ -19,6 +19,7 @@ st.markdown(
         text-align: center;
         font-family: sans-serif;
         font-weight: bold;
+        margin-bottom: 2rem;
     }
 
     /* Container per i pulsanti */
@@ -41,17 +42,27 @@ st.markdown(
         transition: all 0.3s ease;
     }
 
-    /* Stile del pulsante selezionato */
-    .stButton > button:active,
+    /* Stile per il pulsante selezionato */
     .stButton > button.selected {
         background-color: #FF6B6B !important;
         color: white !important;
-        border-color: #FF6B6B !important;
     }
 
-    /* Rimuovi il focus outline predefinito di Streamlit */
-    .stButton > button:focus {
-        box-shadow: none;
+    /* Stile per il pulsante genera file */
+    .stButton > button#genera {
+        width: 100%;
+        margin-top: 20px;
+        background-color: #4A5568;
+        color: white;
+        border: none;
+    }
+
+    /* Stili per l'area di upload e input */
+    .upload-container {
+        margin-top: 2rem;
+        padding: 1rem;
+        border-radius: 8px;
+        background-color: #f8f9fa;
     }
     </style>
     """,
@@ -61,62 +72,78 @@ st.markdown(
 # Titolo
 st.markdown("<h1>SCOPRI IL FUTURO! 😉</h1>", unsafe_allow_html=True)
 
-# Contenitore personalizzato per i pulsanti
-st.markdown('<div class="button-container">', unsafe_allow_html=True)
-
-# Imposta lo stato del pulsante selezionato
+# Inizializza lo stato dei pulsanti
 if "sezione_selezionata" not in st.session_state:
-    st.session_state["sezione_selezionata"] = "Formazione"  # Default
+    st.session_state["sezione_selezionata"] = None
 
-# Crea le colonne per i pulsanti
-col1, col2 = st.columns([1, 1])
+# Container per i pulsanti
+cols = st.columns([1, 1, 1])
 
-# Visualizzazione dei pulsanti
-with col1:
-    if st.button(
-        "Formazione",
-        key="formazione_btn",
-        help="Formazione",
-        use_container_width=True
-    ):
-        st.session_state["sezione_selezionata"] = "Formazione"
+with cols[1]:
+    col1, col2 = st.columns(2)
+    
+    # Pulsante Formazione
+    with col1:
+        if st.button(
+            "Formazione",
+            key="formazione_btn",
+            help="Formazione",
+            use_container_width=True,
+            type="secondary" if st.session_state["sezione_selezionata"] != "Formazione" else "primary"
+        ):
+            if st.session_state["sezione_selezionata"] == "Formazione":
+                st.session_state["sezione_selezionata"] = None
+            else:
+                st.session_state["sezione_selezionata"] = "Formazione"
+    
+    # Pulsante Documenti
+    with col2:
+        if st.button(
+            "Documenti",
+            key="documenti_btn",
+            help="Documenti",
+            use_container_width=True,
+            type="secondary" if st.session_state["sezione_selezionata"] != "Documenti" else "primary"
+        ):
+            if st.session_state["sezione_selezionata"] == "Documenti":
+                st.session_state["sezione_selezionata"] = None
+            else:
+                st.session_state["sezione_selezionata"] = "Documenti"
 
-with col2:
-    if st.button(
-        "Documenti",
-        key="documenti_btn",
-        help="Documenti",
-        use_container_width=True
-    ):
-        st.session_state["sezione_selezionata"] = "Documenti"
+# Mostra l'interfaccia solo se è selezionata una sezione
+if st.session_state["sezione_selezionata"]:
+    st.markdown('<div class="upload-container">', unsafe_allow_html=True)
+    
+    # Caricamento file
+    file_caricato = st.file_uploader(
+        f"Carica il file {st.session_state['sezione_selezionata'].lower()} da filtrare",
+        type="xlsx",
+        key=f"file_uploader_{st.session_state['sezione_selezionata']}",
+        label_visibility="collapsed"
+    )
 
-st.markdown('</div>', unsafe_allow_html=True)
+    # Selettore per l'anno di riferimento
+    anno_riferimento = st.number_input(
+        "Anno di riferimento",
+        min_value=2023,
+        step=1,
+        format="%d",
+        value=2025
+    )
 
-# Aggiungi JavaScript per gestire lo stato visivo dei pulsanti
-st.markdown(
-    f"""
-    <script>
-        // Funzione per aggiornare lo stato dei pulsanti
-        function updateButtonStates() {{
-            const sezione = '{st.session_state["sezione_selezionata"]}';
-            const buttons = document.querySelectorAll('.stButton button');
-            buttons.forEach(button => {{
-                if (button.innerText === sezione) {{
-                    button.classList.add('selected');
-                }} else {{
-                    button.classList.remove('selected');
-                }}
-            }});
-        }}
-        // Esegui all'avvio e ogni volta che cambia lo stato
-        updateButtonStates();
-    </script>
-    """,
-    unsafe_allow_html=True
-)
+    # Pulsante per generare file
+    if st.button("GENERA FILE", key=f"genera_file_button_{st.session_state['sezione_selezionata']}", use_container_width=True):
+        if file_caricato:
+            if st.session_state["sezione_selezionata"] == "Formazione":
+                st.write("Elaborazione del file di formazione...")
+                # Codice per elaborare file di formazione
+            elif st.session_state["sezione_selezionata"] == "Documenti":
+                st.write("Elaborazione del file di documenti...")
+                # Codice per elaborare file di documenti
+        else:
+            st.error("Carica un file prima di generare.")
 
-sezione_corrente = st.session_state["sezione_selezionata"]
-st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Funzione per processare i dati dei corsi
 def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
