@@ -3,30 +3,88 @@ import pandas as pd
 from io import BytesIO
 import xlsxwriter
 
-# Stile del titolo e del sottotitolo
+import streamlit as st
+import pandas as pd
+from io import BytesIO
+import xlsxwriter
+
+# CSS personalizzato
 st.markdown(
-    "<h1 style='text-align: center; font-family: sans-serif; font-weight: bold;'>SCOPRI IL FUTURO ! 😉</h1>",
-    unsafe_allow_html=True
-)
-st.markdown(
-    "<p style='text-align: center; font-family: sans-serif; font-size: 18px;'>Scegli cosa vuoi filtrare</p>",
+    """
+    <style>
+    /* Colore di sfondo e testo della pagina */
+    body {
+        background-color: white;
+        color: #4A5568;
+    }
+
+    /* Stile titolo */
+    h1 {
+        color: #4A5568;
+        text-align: center;
+        font-family: sans-serif;
+        font-weight: bold;
+    }
+
+    /* Bottone non cliccato */
+    .stButton button {
+        color: #FF6B6B;
+        border: 2px solid #FF6B6B;
+        background-color: transparent;
+        font-weight: bold;
+        width: 100%;
+    }
+
+    /* Bottone cliccato */
+    .stButton > button[selected] {
+        background-color: #FF6B6B;
+        color: white;
+        font-weight: bold;
+    }
+
+    </style>
+    """,
     unsafe_allow_html=True
 )
 
-# Imposta lo stato iniziale per la selezione
+# Titolo
+st.markdown("<h1>SCOPRI IL FUTURO! 😉</h1>", unsafe_allow_html=True)
+
+# Selezione tra documenti e formazione con pulsanti stilizzati
+col1, col2 = st.columns([1, 1])
+
+with col1:
+    formazione_clicked = st.button("Formazione", key="formazione")
+with col2:
+    documenti_clicked = st.button("Documenti", key="documenti")
+
+# Imposta lo stato del pulsante selezionato
 if "sezione_selezionata" not in st.session_state:
     st.session_state["sezione_selezionata"] = "Formazione"  # Default
 
-# Funzione per aggiornare la sezione selezionata
-def seleziona_sezione(sezione):
-    st.session_state["sezione_selezionata"] = sezione
+if formazione_clicked:
+    st.session_state["sezione_selezionata"] = "Formazione"
+elif documenti_clicked:
+    st.session_state["sezione_selezionata"] = "Documenti"
 
-# Layout con due pulsanti affiancati
-col1, col2 = st.columns([1, 1], gap="medium")
-with col1:
-    formazione = st.button("**Formazione**", use_container_width=True, on_click=seleziona_sezione, args=("Formazione",))
-with col2:
-    documenti = st.button("**Documenti**", use_container_width=True, on_click=seleziona_sezione, args=("Documenti",))
+sezione_corrente = st.session_state["sezione_selezionata"]
+
+# Area di caricamento file, selezione anno e pulsante genera file
+file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader", label_visibility="collapsed")
+
+anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
+
+# Pulsante genera file centrato
+st.markdown("<div style='display: flex; justify-content: center; margin-top: 20px;'>", unsafe_allow_html=True)
+if st.button("GENERA FILE"):
+    if file_caricato:
+        if sezione_corrente == "Formazione":
+            st.write("Elaborazione del file di formazione...")
+        elif sezione_corrente == "Documenti":
+            st.write("Elaborazione del file di documenti...")
+    else:
+        st.error("Carica un file prima di generare.")
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Determina la sezione corrente in base al pulsante cliccato
 sezione_corrente = st.session_state["sezione_selezionata"]
