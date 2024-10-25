@@ -143,9 +143,6 @@ def convert_df_to_excel(df):
 # Genera file in base alla selezione della sezione
 col4, col5, col6 = st.columns([1, 1, 1])
 with col5:
-   # Pulsante di generazione file con chiave unica per la sezione corrente
-# Pulsante di generazione file centrato con chiave unica per la sezione corrente
-with col_center:
     if st.button("GENERA FILE", key=f"genera_file_button_{sezione_corrente}"):
         if file_caricato:
             if sezione_corrente == "Formazione":
