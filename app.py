@@ -10,18 +10,21 @@ st.set_page_config(
     layout="wide"
 )
 
+# ... resto del tuo codice
+
 # Custom CSS for better styling
 st.markdown("""
     <style>
         body {
-            background-color: white;
+            background-color: white; /* Qui impostiamo lo sfondo bianco */
         }
         /* Altri stili personalizzati */
-        .main {  # Errore: indentatura inattesa
+        .main {
             padding: 1rem;
         }
-    </style>
+        </style>
 """, unsafe_allow_html=True)
+        }
         .stButton button {
             background-color: #FF4B4B;
             color: white;
