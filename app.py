@@ -17,7 +17,7 @@ st.markdown("""
             background-color: white; /* Qui impostiamo lo sfondo bianco */
         }
         /* Altri stili personalizzati */
-        .main {
+        .main{
             padding: 1rem;
         }
         </style>
