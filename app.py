@@ -22,8 +22,6 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-
-# ... resto del tuo codice
         .main {
             padding: 1rem;
         }
