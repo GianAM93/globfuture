@@ -13,6 +13,15 @@ st.set_page_config(
 # Custom CSS for better styling
 st.markdown("""
     <style>
+        body {
+            background-color: white; /* Qui impostiamo lo sfondo bianco */
+        }
+        /* Altri stili personalizzati */
+        .main {
+            padding: 1rem;
+        }
+        </style>
+""", unsafe_allow_html=True)
         .main {
             padding: 1rem;
         }
