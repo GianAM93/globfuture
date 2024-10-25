@@ -55,11 +55,13 @@ st.markdown("""
 
         /* Area drag & drop */
         .stFileUploader {
-            width: 700px;
+            width: 100%;
+            max-width: 700pz;
             border: 4px dashed #cccccc;
             border-radius: 8px;
             padding: 32px;
             text-align: center;
+            margin: auto;
         }
         .stFileUploader label div {
             font-size: 48px; /* Icona di upload */
