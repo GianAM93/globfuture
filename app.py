@@ -1,6 +1,17 @@
-# Importa le librerie necessarie
 import streamlit as st
-import streamlit as st
+import pandas as pd
+from io import BytesIO
+import xlsxwriter
+
+# Stile del titolo e del sottotitolo
+st.markdown(
+    "<h1 style='text-align: center; font-family: sans-serif; font-weight: bold;'>SCOPRI IL FUTURO ! 😉</h1>",
+    unsafe_allow_html=True
+)
+st.markdown(
+    "<p style='text-align: center; font-family: sans-serif; font-size: 18px;'>Scegli cosa vuoi filtrare</p>",
+    unsafe_allow_html=True
+)
 
 # Imposta lo stato iniziale per la selezione
 if "sezione_selezionata" not in st.session_state:
@@ -10,30 +21,40 @@ if "sezione_selezionata" not in st.session_state:
 def seleziona_sezione(sezione):
     st.session_state["sezione_selezionata"] = sezione
 
-# Layout con due pulsanti
-col1, col2 = st.columns(2)
+# Layout con due pulsanti centrali
+col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
-    if st.button("Formazione"):
-        seleziona_sezione("Formazione")
+    pass
 with col2:
-    if st.button("Documenti"):
+    if st.button("Formazione", use_container_width=True, on_click=seleziona_sezione, args=("Formazione",)):
+        seleziona_sezione("Formazione")
+    if st.button("Documenti", use_container_width=True, on_click=seleziona_sezione, args=("Documenti",)):
         seleziona_sezione("Documenti")
+with col3:
+    pass
 
 # Mostra quale sezione è attualmente attiva
 sezione_corrente = st.session_state["sezione_selezionata"]
 st.write(f"Hai selezionato: **{sezione_corrente}**")
 
-# Esegue il caricamento e l'analisi in base alla sezione selezionata
-if sezione_corrente == "Formazione":
-    # Inserisci qui il codice per il caricamento e l'analisi della formazione
-    st.write("Caricamento e analisi della formazione...")
-else:
-    # Inserisci qui il codice per il caricamento e l'analisi dei documenti
-    st.write("Caricamento e analisi dei documenti...")
+# Area di caricamento file, selezione anno e pulsante genera file
+st.write("---")  # linea di separazione
 
-import pandas as pd
-from io import BytesIO
-import xlsxwriter
+file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader")
+
+anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
+
+# Pulsante genera file centrato
+if st.button("GENERA FILE", key="genera_file_button"):
+    if file_caricato:
+        # Codice per l'elaborazione in base alla sezione selezionata
+        if sezione_corrente == "Formazione":
+            st.write("Elaborazione del file di formazione...")  # Sostituisci con il tuo codice specifico per formazione
+        elif sezione_corrente == "Documenti":
+            st.write("Elaborazione del file di documenti...")  # Sostituisci con il tuo codice specifico per documenti
+    else:
+        st.error("Carica un file prima di generare.")
+
 
 # Funzione per processare i dati dei corsi
 def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
