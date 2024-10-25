@@ -9,7 +9,7 @@ st.markdown(
     <style>
     /* Colore di sfondo e testo della pagina */
     .main {
-        background-color: white;
+        background-color: rgb(255, 255, 255);
         color: #FFFFFF;
     }
 
