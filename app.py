@@ -38,8 +38,7 @@ st.markdown("""
             text-align: center;
             margin-bottom: 32px;
         }
-
-/* Contenitore per i pulsanti */
+        /* Contenitore per i pulsanti */
 .button-container {
     text-align: center;
     margin-bottom: 32px; /* Spazio sotto il container */
@@ -60,7 +59,6 @@ st.markdown("""
 .stButton button:hover {
     background-color: #FF2B2B;
 }
-
 
         /* Area drag & drop */
         .stFileUploader {
