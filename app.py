@@ -86,8 +86,8 @@ if "sezione_selezionata" not in st.session_state:
 # Title and subtitle with enhanced styling
 st.markdown("""
     <div style="text-align: center;">
-        <span style="font-size: 3rem;">🔮</span> <!-- Emoji separata per mantenere il colore originale -->
-        <span class="title-text">SCOPRI IL FUTURO!</span>
+    <span class="title-text">SCOPRI IL FUTURO!</span>
+        <span style="font-size: 3rem;">😂</span> <!-- Emoji separata per mantenere il colore originale -->
     </div>
     <div class="subtitle-text">Scegli cosa vuoi filtrare</div>
 """, unsafe_allow_html=True)
