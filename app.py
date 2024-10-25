@@ -43,7 +43,7 @@ st.markdown("""
         .stButton button {
             padding: 12px 24px;
             border-radius: 8px;
-            height: 48px;
+            height: 80px;
             margin-right: 16px; /* Spazio tra i pulsanti */
             background-color: #FF4B4B;
             color: white;
