@@ -111,3 +111,5 @@ if st.button("GENERA FILE"):
         df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
         excel_finale = convert_df_to_excel(df_finale)
         st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
+    else:
+        st.error("Carica un file valido per generare l'output.")
