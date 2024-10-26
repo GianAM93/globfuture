@@ -1,98 +1,46 @@
+# Importa le librerie necessarie
 import streamlit as st
 import pandas as pd
 from io import BytesIO
 import xlsxwriter
 
-# Stile del titolo e del sottotitolo
-st.markdown(
-    "<h1 style='text-align: center; font-family: sans-serif; font-weight: bold;'>SCOPRI IL FUTURO ! 😉</h1>",
-    unsafe_allow_html=True
-)
-st.markdown(
-    "<p style='text-align: center; font-family: sans-serif; font-size: 18px;'>Scegli cosa vuoi filtrare</p>",
-    unsafe_allow_html=True
-)
-
-# Imposta lo stato iniziale per la selezione
-if "sezione_selezionata" not in st.session_state:
-    st.session_state["sezione_selezionata"] = "Formazione"  # Default
-
-# Funzione per aggiornare la sezione selezionata
-def seleziona_sezione(sezione):
-    st.session_state["sezione_selezionata"] = sezione
-
-# Layout con due pulsanti centrali
-col1, col2, col3 = st.columns([1, 1, 1])
-with col1:
-    pass
-with col2:
-    # Pulsanti per la selezione
-    formazione = st.button("Formazione", use_container_width=True, on_click=seleziona_sezione, args=("Formazione",))
-    documenti = st.button("Documenti", use_container_width=True, on_click=seleziona_sezione, args=("Documenti",))
-with col3:
-    pass
-
-# Variabile per sapere se è stata selezionata formazione o documenti
-sezione_corrente = st.session_state["sezione_selezionata"]
-st.write(f"Hai selezionato: **{sezione_corrente}**")
-
-# Caricamento dei file necessari da GitHub
-url_base = "https://raw.githubusercontent.com/tuo_username/tuo_repository/main/"
-try:
-    df_ateco = pd.read_excel(url_base + "AziendaAteco.xlsx")
-    df_aggiornamento = pd.read_excel(url_base + "Aggiornamento.xlsx")
-    df_mappa_corsi = pd.read_excel(url_base + "MappaCorsi.xlsx")
-    df_periodo_gruppi = pd.read_excel(url_base + "PeriodoGruppi.xlsx")
-    df_mappa_documenti = pd.read_excel(url_base + "MappaDocumenti.xlsx")
-    df_periodo_documenti = pd.read_excel(url_base + "PeriodoDocumenti.xlsx")
-except Exception as e:
-    st.error(f"Errore durante il caricamento dei file: {e}")
-
-# Area di caricamento file e selezione anno di riferimento
-st.write("---")  # linea di separazione
-file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader")
-anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
-
-# Funzione per processare i dati dei corsi
+# Funzione per processare i dati
 def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
+    # Carica i dati dal file caricato
     df_corsi = pd.read_excel(file_corsi)
+    
+    # Pulizia iniziale dei dati di corsi
     df_corsi_cleaned = df_corsi[['TipoCorso', 'DataCorso', 'RagioneSociale', 'Dipendente', 'Localita']]
+    
+    # Unione con ATECO
     df_corsi_ateco = pd.merge(df_corsi_cleaned, df_ateco, how='left', on='RagioneSociale')
+    
+    # Unione con mappatura gruppi
     df_corsi_mappati = pd.merge(df_corsi_ateco, df_mappa_corsi, how='left', on='TipoCorso')
+
+    # Identifica le aziende edili e aggiorna 'GruppoCorso' se necessario
     df_corsi_mappati['CodATECO'] = df_corsi_mappati['CodATECO'].astype(str)
     settore_edile = df_corsi_mappati['CodATECO'].str.startswith(('41', '42', '43'))
     df_corsi_mappati.loc[settore_edile & df_corsi_mappati['GruppoCorso'].str.contains('Specifica', case=False), 'GruppoCorso'] = 'SpecificaEdile'
+    
+    # Unione con periodicità
     df_corsi_completo = pd.merge(df_corsi_mappati, df_periodo_gruppi, how='left', on='GruppoCorso')
+
+    # Calcolo dell'anno di scadenza
     df_corsi_completo['AnnoScadenza'] = df_corsi_completo['DataCorso'].apply(lambda x: x.year) + df_corsi_completo['PeriodicitaCorso']
     df_scadenza = df_corsi_completo[df_corsi_completo['AnnoScadenza'] == anno_riferimento]
+
+    # Rimozione duplicati
     df_scadenza = df_scadenza.drop_duplicates(subset=['Dipendente', 'RagioneSociale', 'GruppoCorso'], keep='first')
     df_scadenza['DataCorso'] = pd.to_datetime(df_scadenza['DataCorso'], format='%d-%m-%Y').apply(lambda x: x.replace(year=anno_riferimento))
     df_scadenza['DataCorso'] = df_scadenza['DataCorso'].dt.strftime('%d-%m-%Y')
+
+    # Unione con aggiornamenti e rimozione colonne non necessarie
     df_completo_aggiornato = pd.merge(df_scadenza, df_aggiornamento, on='TipoCorso', how='left')
     colonne_ordinate = ['TipoCorso', 'Aggiornamento'] + [col for col in df_completo_aggiornato.columns if col not in ['TipoCorso', 'Aggiornamento']]
     df_completo_aggiornato = df_completo_aggiornato[colonne_ordinate]
+    
     return df_completo_aggiornato
-
-# Funzione per processare i documenti
-def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti, anno_riferimento):
-    df_documenti = pd.read_excel(file_documenti)
-    df_documenti_cleaned = df_documenti[['Documenti', 'Data', 'RagioneSociale']]
-    df_documenti_mappati = pd.merge(df_documenti_cleaned, df_mappa_documenti, how='left', left_on='Documenti', right_on='TipoDocumento')
-    if 'GruppoDocumenti' not in df_documenti_mappati.columns:
-        st.error("Errore: 'GruppoDocumenti' non trovato dopo la mappatura dei documenti.")
-        return pd.DataFrame()  
-    df_documenti_completo = pd.merge(df_documenti_mappati, df_periodo_documenti, how='left', on='GruppoDocumenti')
-    if 'PeriodicitaDoc' not in df_documenti_completo.columns:
-        st.error("Errore: 'PeriodicitaDoc' non trovato dopo la mappatura della periodicità.")
-        return pd.DataFrame()  
-    df_documenti_completo['AnnoScadenza'] = df_documenti_completo['Data'].apply(lambda x: x.year) + df_documenti_completo['PeriodicitaDoc']
-    df_scadenza = df_documenti_completo[df_documenti_completo['AnnoScadenza'] == anno_riferimento]
-    df_scadenza = df_scadenza.drop_duplicates(subset=['RagioneSociale', 'GruppoDocumenti'], keep='first')
-    df_scadenza['Data'] = pd.to_datetime(df_scadenza['Data'], format='%d-%m-%Y').apply(lambda x: x.replace(year=anno_riferimento))
-    df_scadenza['Data'] = df_scadenza['Data'].dt.strftime('%d-%m-%Y')
-    df_scadenza = df_scadenza.drop(columns=['Documenti', 'TipoDocumento', 'PeriodicitaDoc', 'AnnoScadenza'], errors='ignore')
-
-    return df_scadenza
 
 # Funzione per convertire DataFrame in Excel
 def convert_df_to_excel(df):
@@ -101,15 +49,41 @@ def convert_df_to_excel(df):
         df.to_excel(writer, index=False)
     return output.getvalue()
 
-# Genera file in base alla selezione della sezione
-if st.button("GENERA FILE"):
-    if sezione_corrente == "Formazione" and file_caricato:
-        df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
+# Funzione per dividere il DataFrame per GruppoCorso e salvarlo in un file Excel
+def save_groups_to_excel(df):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        for gruppo, group_data in df.groupby('GruppoCorso'):
+            group_data.drop(columns=['Localita', 'CodATECO', 'GruppoCorso'], inplace=True)
+            group_data.to_excel(writer, sheet_name=gruppo[:31], index=False)
+    return output.getvalue()
+
+# Interfaccia Streamlit
+st.title("Gestione Corsi e Scadenze")
+
+# Caricamento del file principale (Corsi_yyyy.xlsx)
+file_corsi = st.file_uploader("Carica il file dei corsi (Corsi_yyyy.xlsx)", type="xlsx")
+
+# Caricamento dei file di mappatura dal repository
+df_ateco = pd.read_excel("AziendeAteco.xlsx")
+df_aggiornamento = pd.read_excel("Corso_Aggiornamento.xlsx")
+df_mappa_corsi = pd.read_excel("MappaCorsi.xlsx")
+df_periodo_gruppi = pd.read_excel("PeriodoGruppi.xlsx")
+
+# Input per l'anno di riferimento
+anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
+
+# Esegui la generazione dei file
+if st.button("Genera File"):
+    if file_corsi:
+        df_finale = processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
+        
+        # Converte e salva in Excel
         excel_finale = convert_df_to_excel(df_finale)
-        st.download_button("Scarica file formazione", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
-    elif sezione_corrente == "Documenti" and file_caricato:
-        df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
-        excel_finale = convert_df_to_excel(df_finale)
-        st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
+        st.download_button("Scarica file completo", data=excel_finale, file_name=f'Corsi_scadenza_{anno_riferimento}_completo.xlsx')
+
+        # Salva file diviso per gruppo
+        excel_per_gruppo = save_groups_to_excel(df_finale)
+        st.download_button("Scarica file diviso per gruppo", data=excel_per_gruppo, file_name=f'Programma_{anno_riferimento}_per_gruppo.xlsx')
     else:
-        st.error("Carica un file valido per generare l'output.")
+        st.error("Carica il file dei corsi.")
