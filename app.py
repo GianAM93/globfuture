@@ -112,4 +112,7 @@ with col5:
             
             # Primo file con selezione di colonne
             excel_first_file = convert_df_to_excel(df_first_file)
-            st.download_button("Scarica file formazione completo", data=excel_first_file, file_name=f"Corsi_sc
+            st.download_button("Scarica file formazione completo", data=excel_first_file, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
+            
+            # Secondo file suddiviso per GruppoCorso
+            st.download_button("Scarica file formazione per Gruppo
