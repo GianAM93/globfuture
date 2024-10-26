@@ -36,6 +36,18 @@ with col3:
 sezione_corrente = st.session_state["sezione_selezionata"]
 st.write(f"Hai selezionato: **{sezione_corrente}**")
 
+# Caricamento dei file necessari da GitHub
+url_base = "https://raw.githubusercontent.com/tuo_username/tuo_repository/main/"
+try:
+    df_ateco = pd.read_excel(url_base + "AziendaAteco.xlsx")
+    df_aggiornamento = pd.read_excel(url_base + "Aggiornamento.xlsx")
+    df_mappa_corsi = pd.read_excel(url_base + "MappaCorsi.xlsx")
+    df_periodo_gruppi = pd.read_excel(url_base + "PeriodoGruppi.xlsx")
+    df_mappa_documenti = pd.read_excel(url_base + "MappaDocumenti.xlsx")
+    df_periodo_documenti = pd.read_excel(url_base + "PeriodoDocumenti.xlsx")
+except Exception as e:
+    st.error(f"Errore durante il caricamento dei file: {e}")
+
 # Area di caricamento file e selezione anno di riferimento
 st.write("---")  # linea di separazione
 file_caricato = st.file_uploader(f"Carica il file {sezione_corrente.lower()} da filtrare", type="xlsx", key="file_uploader")
@@ -99,5 +111,3 @@ if st.button("GENERA FILE"):
         df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
         excel_finale = convert_df_to_excel(df_finale)
         st.download_button("Scarica file documenti", data=excel_finale, file_name=f'Documenti_scadenza_{anno_riferimento}_completo.xlsx')
-    else:
-        st.error("Carica un file valido per generare l'output.")
