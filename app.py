@@ -5,7 +5,7 @@ import xlsxwriter
 
 # Stile del titolo e del sottotitolo
 st.markdown(
-    "<h1 style='text-align: center; font-family: sans-serif; font-weight: bold;'>SCOPRI IL FUTURO ! 🔮</h1>",
+    "<h1 style='text-align: center; font-family: sans-serif; font-weight: bold;'>SCOPRI IL FUTURO ! 😉</h1>",
     unsafe_allow_html=True
 )
 st.markdown(
@@ -53,7 +53,20 @@ def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_pe
     df_completo_aggiornato = pd.merge(df_scadenza, df_aggiornamento, on='TipoCorso', how='left')
     colonne_ordinate = ['TipoCorso', 'Aggiornamento'] + [col for col in df_completo_aggiornato.columns if col not in ['TipoCorso', 'Aggiornamento']]
     df_completo_aggiornato = df_completo_aggiornato[colonne_ordinate]
-    return df_completo_aggiornato
+    
+    # Creazione del primo file (senza le colonne specificate)
+    df_first_file = df_completo_aggiornato.drop(columns=['TipoCorso', 'PeriodicitaCorso', 'AnnoScadenza'], errors='ignore')
+    
+    # Creazione del secondo file suddiviso per GruppoCorso
+    df_second_file = df_first_file.copy()
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        for gruppo, group_data in df_second_file.groupby('GruppoCorso'):
+            group_data = group_data.drop(columns=['TipoCorso', 'Localita', 'CodATECO', 'GruppoCorso', 'PeriodicitaCorso', 'AnnoScadenza'], errors='ignore')
+            group_data.to_excel(writer, sheet_name=gruppo[:31], index=False)  # Troncamento nome foglio per Excel
+    output.seek(0)
+    
+    return df_first_file, output.getvalue()
 
 # Funzione per processare i documenti
 def processa_documenti(file_documenti, df_mappa_documenti, df_periodo_documenti, anno_riferimento):
@@ -95,12 +108,8 @@ col4, col5, col6 = st.columns([1, 1, 1])
 with col5:
     if st.button("GENERA FILE", key="genera_file_button"):
         if sezione_corrente == "Formazione" and file_caricato:
-            df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
-            excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file formazione", data=excel_finale, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
-        elif sezione_corrente == "Documenti" and file_caricato:
-            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
-            excel_finale = convert_df_to_excel(df_finale)
-            st.download_button("Scarica file documenti", data=excel_finale, file_name=f"Documenti_scadenza_{anno_riferimento}_completo.xlsx")
-        else:
-            st.error("Carica un file valido per generare l'output.")
+            df_first_file, second_file = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
+            
+            # Primo file con selezione di colonne
+            excel_first_file = convert_df_to_excel(df_first_file)
+            st.download_button("Scarica file formazione completo", data=excel_first_file, file_name=f"Corsi_sc
