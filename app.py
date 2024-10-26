@@ -73,7 +73,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Percorso della cartella dei file di supporto
-data_folder = "data"
+data_folder = ".data"
 
 # Funzione per caricare i file e gestire errori
 def carica_file_excel(nome_file):
