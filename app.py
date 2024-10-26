@@ -115,4 +115,4 @@ with col5:
             st.download_button("Scarica file formazione completo", data=excel_first_file, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
             
             # Secondo file suddiviso per GruppoCorso
-            st.download_button("Scarica file formazione per Gruppo
+            st.download_button("Scarica file formazione per GruppoCorso", data=second_file, file_name=f"Corsi_scadenza_{anno_riferimento}_per_GruppoCorso.xlsx")
