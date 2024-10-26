@@ -110,10 +110,12 @@ with col5:
         if sezione_corrente == "Formazione" and file_caricato:
             df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
 
-            # Primo file di formazione senza alcune colonne
-            excel_first_file = convert_df_to_excel(df_finale.drop(columns=["TipoCorso", "PeriodicitaCorso", "AnnoScadenza"]))
+            # Generazione del primo file di formazione senza alcune colonne
+            colonne_da_rimuovere = ["TipoCorso", "PeriodicitaCorso", "AnnoScadenza"]
+            df_finale_modificato = df_finale.drop(columns=[col for col in colonne_da_rimuovere if col in df_finale.columns])
+            excel_first_file = convert_df_to_excel(df_finale_modificato)
             st.session_state["excel_first_file"] = excel_first_file
-
+            
             # Secondo file di formazione suddiviso per GruppoCorso
             excel_second_file = save_groups_to_excel(df_finale)
             st.session_state["excel_second_file"] = excel_second_file
