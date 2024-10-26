@@ -19,7 +19,6 @@ st.markdown("""
             padding: 32px;
             margin: auto;
         }
-        /* Altri stili personalizzati */
         .title-text {
             font-size: 36px;
             font-weight: bold;
@@ -74,7 +73,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Percorso della cartella dei file di supporto
-data_folder = ".data"
+data_folder = "data"
 
 # Funzione per caricare i file e gestire errori
 def carica_file_excel(nome_file):
@@ -96,14 +95,62 @@ df_periodo_documenti = carica_file_excel("PeriodicitaDocumenti.xlsx")
 if any(df is None for df in [df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, df_mappa_documenti, df_periodo_documenti]):
     st.stop()  # Interrompe l'applicazione se manca un file
 
+# Container principale
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
+
+# Titolo e sottotitolo
+st.markdown("""
+    <div style="text-align: center;">
+        <span style="font-size: 3rem;">🔮</span>
+        <span class="title-text">SCOPRI IL FUTURO!</span>
+    </div>
+    <div class="subtitle-text">Scegli cosa vuoi filtrare</div>
+""", unsafe_allow_html=True)
+
+# Contenitore per selezione della sezione
+st.markdown('<div class="button-container">', unsafe_allow_html=True)
+col1, col2 = st.columns(2)
+with col1:
+    formazione = st.button("📚 Formazione", key="formazione")
+with col2:
+    documenti = st.button("📄 Documenti", key="documenti")
+
+# Determina la sezione selezionata
+if "sezione_selezionata" not in st.session_state:
+    st.session_state["sezione_selezionata"] = "Formazione"
+if formazione:
+    st.session_state["sezione_selezionata"] = "Formazione"
+if documenti:
+    st.session_state["sezione_selezionata"] = "Documenti"
+
+st.markdown(f"<h3 style='text-align: center; color: #FF4B4B;'>Sezione: {st.session_state['sezione_selezionata']}</h3>", 
+            unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# File upload e selettore anno
+st.markdown('<div class="section-box">', unsafe_allow_html=True)
+file_caricato = st.file_uploader(
+    f"Carica il file {st.session_state['sezione_selezionata'].lower()} da filtrare",
+    type="xlsx",
+    help="Seleziona un file Excel (.xlsx)"
+)
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    anno_riferimento = st.number_input(
+        "Anno di riferimento",
+        min_value=2023,
+        step=1,
+        format="%d",
+        value=2025,
+        help="Seleziona l'anno di riferimento per l'analisi"
+    )
+st.markdown('</div>', unsafe_allow_html=True)
+
 # Funzione di elaborazione aggiornata per generare i due file
 @st.cache_data
 def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento):
     df_corsi = pd.read_excel(file_corsi)
     df_corsi_cleaned = df_corsi[['TipoCorso', 'DataCorso', 'RagioneSociale', 'Dipendente', 'Localita']]
-    
-    progress_bar = st.progress(0)
-    status_text = st.empty()
     
     # Merge con df_ateco e mappatura dei corsi
     df_corsi_ateco = pd.merge(df_corsi_cleaned, df_ateco, how='left', on='RagioneSociale')
@@ -116,15 +163,12 @@ def processa_corsi(file_corsi, df_ateco, df_aggiornamento, df_mappa_corsi, df_pe
     df_corsi_completo['AnnoScadenza'] = df_corsi_completo['DataCorso'].apply(lambda x: x.year) + df_corsi_completo['PeriodicitaCorso']
     df_finale_1 = df_corsi_completo[df_corsi_completo['AnnoScadenza'] == anno_riferimento].drop(columns=['PeriodicitaCorso', 'AnnoScadenza'])
 
-    # Creazione del secondo file con più pagine per GruppoCorso (filtrato)
+    # Creazione del secondo file con più pagine per GruppoCorso
     file_buffer = BytesIO()
     with pd.ExcelWriter(file_buffer, engine='xlsxwriter') as writer:
         for gruppo, gruppo_df in df_corsi_completo.groupby("GruppoCorso"):
             gruppo_df_filtered = gruppo_df.drop(columns=['TipoCorso', 'Localita', 'CodATECO', 'GruppoCorso', 'PeriodicitaCorso', 'AnnoScadenza'])
             gruppo_df_filtered.to_excel(writer, sheet_name=gruppo[:31], index=False)  # Excel ha limite di 31 caratteri per nome pagina
-    
-    progress_bar.progress(100)
-    status_text.text("Elaborazione completata!")
     
     return df_finale_1, file_buffer.getvalue()
 
