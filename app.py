@@ -108,22 +108,25 @@ col4, col5, col6 = st.columns([1, 1, 1])
 with col5:
     if st.button("GENERA FILE", key="genera_file_button"):
         if sezione_corrente == "Formazione" and file_caricato:
-            df_first_file, second_file = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
-            
-            # Primo file con selezione di colonne
-            excel_first_file = convert_df_to_excel(df_first_file)
-            st.download_button("Scarica file formazione completo", data=excel_first_file, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
-            
-            # Secondo file suddiviso per GruppoCorso
-            st.download_button("Scarica file formazione per GruppoCorso", data=second_file, file_name=f"Corsi_scadenza_{anno_riferimento}_per_GruppoCorso.xlsx")
-        elif sezione_corrente == "Documenti" and file_caricato:
-            # Processo per il file documenti
-            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
-            
-            # Converte il DataFrame in Excel per il download
-            excel_documenti_file = convert_df_to_excel(df_finale)
+            df_finale = processa_corsi(file_caricato, df_ateco, df_aggiornamento, df_mappa_corsi, df_periodo_gruppi, anno_riferimento)
 
-            # Scarica il file dei documenti
-            st.download_button("Scarica file documenti filtrato", data=excel_documenti_file, file_name=f"Documenti_scadenza_{anno_riferimento}_filtrato.xlsx")
-        else:
-            st.error("Carica un file valido per generare l'output.")
+            # Primo file di formazione senza alcune colonne
+            excel_first_file = convert_df_to_excel(df_finale.drop(columns=["TipoCorso", "PeriodicitaCorso", "AnnoScadenza"]))
+            st.session_state["excel_first_file"] = excel_first_file
+
+            # Secondo file di formazione suddiviso per GruppoCorso
+            excel_second_file = save_groups_to_excel(df_finale)
+            st.session_state["excel_second_file"] = excel_second_file
+
+        elif sezione_corrente == "Documenti" and file_caricato:
+            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
+            excel_finale = convert_df_to_excel(df_finale)
+            st.session_state["excel_documenti_file"] = excel_finale
+
+# Gestione pulsanti di download dei file generati
+if "excel_first_file" in st.session_state:
+    st.download_button("Scarica file formazione completo", data=st.session_state["excel_first_file"], file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
+if "excel_second_file" in st.session_state:
+    st.download_button("Scarica file formazione per Gruppo", data=st.session_state["excel_second_file"], file_name=f"Corsi_scadenza_{anno_riferimento}_per_Gruppo.xlsx")
+if "excel_documenti_file" in st.session_state:
+    st.download_button("Scarica file documenti", data=st.session_state["excel_documenti_file"], file_name=f"Documenti_scadenza_{anno_riferimento}_completo.xlsx")
