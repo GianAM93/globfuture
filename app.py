@@ -82,6 +82,14 @@ def convert_df_to_excel(df):
         df.to_excel(writer, index=False)
     return output.getvalue()
 
+# Caricamento dati per mappatura dalla cartella .data
+df_ateco = pd.read_excel(".data/AziendeAteco.xlsx")
+df_aggiornamento = pd.read_excel(".data/Corso_Aggiornamento.xlsx")
+df_mappa_corsi = pd.read_excel(".data/MappaCorsi.xlsx")
+df_mappa_documenti = pd.read_excel(".data/MappaDocumenti.xlsx")
+df_periodo_gruppi = pd.read_excel(".data/PeriodoGruppi.xlsx")
+df_periodo_documenti = pd.read_excel(".data/PeriodicitaDocumenti.xlsx")
+
 # Genera file in base alla selezione della sezione
 col4, col5, col6 = st.columns([1, 1, 1])
 with col5:
