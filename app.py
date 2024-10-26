@@ -116,3 +116,14 @@ with col5:
             
             # Secondo file suddiviso per GruppoCorso
             st.download_button("Scarica file formazione per GruppoCorso", data=second_file, file_name=f"Corsi_scadenza_{anno_riferimento}_per_GruppoCorso.xlsx")
+        elif sezione_corrente == "Documenti" and file_caricato:
+            # Processo per il file documenti
+            df_finale = processa_documenti(file_caricato, df_mappa_documenti, df_periodo_documenti, anno_riferimento)
+            
+            # Converte il DataFrame in Excel per il download
+            excel_documenti_file = convert_df_to_excel(df_finale)
+
+            # Scarica il file dei documenti
+            st.download_button("Scarica file documenti filtrato", data=excel_documenti_file, file_name=f"Documenti_scadenza_{anno_riferimento}_filtrato.xlsx")
+        else:
+            st.error("Carica un file valido per generare l'output.")
