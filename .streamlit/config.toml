@@ -1,4 +1,6 @@
 [theme]
-backgroundColor="#FFFFFF"
-textColor="#000000"
-primaryColor="#FF4B4B"  # Puoi personalizzare il colore principale
+backgroundColor = "#FFFFFF"
+textColor = "#4A5568"
+primaryColor = "#FF6B6B"
+secondaryBackgroundColor = "#F0F2F6"  # Colore di sfondo secondario
+font = "sans serif"  # Puoi scegliere tra 'sans serif', 'serif', e 'monospace'
