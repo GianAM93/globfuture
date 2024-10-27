@@ -48,7 +48,7 @@ def processa_corsi(file_corsi, df_ateco, df_mappa_corsi, df_periodo_gruppi, df_a
             group_data.to_excel(writer, sheet_name=gruppo[:31], index=False)
     return excel_first_file.getvalue(), excel_grouped_file.getvalue()
 
-# Funzione per processare i documenti
+# Funzione per processare i documenti con rimozione dei duplicati
 def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_documenti, anno_riferimento):
     df_documenti = pd.read_excel(file_documenti)
     df_documenti_cleaned = df_documenti[['Documenti', 'Data', 'RagioneSociale']]
@@ -56,6 +56,7 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_docume
     df_documenti_completo = pd.merge(df_documenti_mappati, df_periodicita_documenti, how='left', on='GruppoDocumenti')
     df_documenti_completo['AnnoScadenza'] = df_documenti_completo['Data'].apply(lambda x: x.year) + df_documenti_completo['PeriodicitaDoc']
     df_scadenza = df_documenti_completo[df_documenti_completo['AnnoScadenza'] == anno_riferimento]
+    df_scadenza = df_scadenza.drop_duplicates(subset=['RagioneSociale', 'GruppoDocumenti'], keep='first')
     df_scadenza['Data'] = pd.to_datetime(df_scadenza['Data']).apply(lambda x: x.replace(year=anno_riferimento)).dt.strftime('%d-%m-%Y')
     df_finale_documenti = df_scadenza[['Data', 'RagioneSociale', 'GruppoDocumenti']]
     excel_documenti_file = BytesIO()
@@ -85,4 +86,3 @@ if st.button("Genera File") and file_caricato:
     elif opzione == "Documenti":
         excel_documenti_file = processa_documenti(file_caricato, df_mappa_documenti, df_periodicita_documenti, anno_riferimento)
         st.download_button("Scarica file dei documenti", data=excel_documenti_file, file_name=f"Documenti_scadenza_{anno_riferimento}.xlsx")
-
