@@ -2,72 +2,51 @@ import streamlit as st
 import pandas as pd
 import os
 from io import BytesIO
-import streamlit.components.v1 as components 
 
-# 1. Definizione dei colori tematici
-colors = {
-    "Corsi": {
-        "primary": "#6C63FF",
-        "gradient": "linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%)",
-        "light": "rgba(108, 99, 255, 0.1)"
-    },
-    "Documenti": {
-        "primary": "#FF6B6B",
-        "gradient": "linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%)",
-        "light": "rgba(255, 107, 107, 0.1)"
-    }
-}
-
-def custom_radio():
-    radio_html = """
-        <div class="custom-radio-container">
-            <button class="radio-button active" data-value="Corsi" onclick="handleClick(this)">
-                <span>Corsi</span>
-            </button>
-            <button class="radio-button" data-value="Documenti" onclick="handleClick(this)">
-                <span>Documenti</span>
-            </button>
-        </div>
-        <script>
-            function handleClick(element) {
-                // Rimuovi active da tutti i bottoni
-                document.querySelectorAll('.radio-button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                // Aggiungi active al bottone cliccato
-                element.classList.add('active');
-                
-                // Imposta il tema
-                const value = element.getAttribute('data-value');
-                document.body.setAttribute('data-theme', value);
-                
-                // Comunica con Streamlit
-                if (window.Streamlit) {
-                    window.Streamlit.setComponentValue(value);
-                }
-            }
-
-            // Imposta il tema iniziale quando il documento è caricato
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.setAttribute('data-theme', 'Corsi');
-            });
-        </script>
-    """
-    components.html(radio_html, height=80)  # Aumentato leggermente l'height
-    return st.session_state.get('selected_option', 'Corsi')
-
-# 2. Funzione per caricare il CSS
+# 1. Carica il CSS di base per Streamlit
 def load_css():
-    css_path = os.path.join('assets', 'style.css')
-    if os.path.exists(css_path):
-        with open(css_path) as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-    else:
-        st.error("File CSS non trovato in assets/style.css")
+    css_path = os.path.join('.assets', 'style.css')
+    with open(css_path) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# 3. Carica il CSS
-load_css()
+# 2. Crea i pulsanti di selezione personalizzati
+def create_selector():
+    selector_html = """
+    <div class="theme-selector">
+        <button class="theme-button corsi active" data-theme="Corsi" onclick="selectTheme(this)">
+            <span class="button-content">Corsi</span>
+        </button>
+        <button class="theme-button documenti" data-theme="Documenti" onclick="selectTheme(this)">
+            <span class="button-content">Documenti</span>
+        </button>
+    </div>
+
+    <script>
+    function selectTheme(element) {
+        // Rimuovi active da tutti i bottoni
+        document.querySelectorAll('.theme-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Aggiungi active al bottone selezionato
+        element.classList.add('active');
+        
+        // Imposta il tema
+        const theme = element.getAttribute('data-theme');
+        document.body.setAttribute('data-theme', theme);
+        
+        // Comunica con Streamlit
+        window.Streamlit.setComponentValue(theme);
+    }
+
+    // Imposta il tema iniziale
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.setAttribute('data-theme', 'Corsi');
+    });
+    </script>
+    """
+    selection = st.components.v1.html(selector_html, height=100)
+    return selection if selection else "Corsi"
 
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
