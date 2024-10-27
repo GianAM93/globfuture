@@ -1,6 +1,6 @@
 [theme]
-backgroundColor = "#FFFFFF"
-textColor = "#4A5568"
-primaryColor = "#FF6B6B"
-secondaryBackgroundColor = "#F0F2F6"  # Colore di sfondo secondario
-font = "sans serif"  # Puoi scegliere tra 'sans serif', 'serif', e 'monospace'
+primaryColor="#6C63FF"           # Colore principale moderno e vivace
+backgroundColor="#F8F9FD"        # Sfondo principale chiaro con una leggera tinta blu
+secondaryBackgroundColor="#FFFFFF" # Sfondo secondario bianco puro
+textColor="#1E293B"              # Colore testo scuro leggermente bluastro
+font="Inter"                     # Font moderno e leggibile
