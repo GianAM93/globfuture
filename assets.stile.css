@@ -1,0 +1,15 @@
+/* Stile per i titoli */
+h1 {
+    color: #4A5568;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Pulsanti personalizzati */
+.stButton > button {
+    background-color: transparent;
+    color: #FF6B6B;
+    border: 2px solid #FF6B6B;
+    font-weight: bold;
+    width: 100%;
+}
