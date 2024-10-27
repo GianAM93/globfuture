@@ -3,61 +3,6 @@ import pandas as pd
 import os
 from io import BytesIO
 
-# Carica il CSS personalizzato da style.css
-def load_css():
-    with open("assets/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-load_css()  # Applica il CSS personalizzato
-
-# Imposta lo stato iniziale per il pulsante attivo
-if "sezione" not in st.session_state:
-    st.session_state["sezione"] = "Formazione"  # Default alla Formazione
-
-# Funzione per alternare lo stato del pulsante
-def set_sezione(sezione):
-    st.session_state["sezione"] = sezione
-
-# Interfaccia dei pulsanti "interruttori"
-col1, col2 = st.columns(2)
-with col1:
-    if st.button(
-        "Formazione",
-        on_click=set_sezione,
-        args=("Formazione",),
-        key="formazione_btn",
-        help="Seleziona Formazione",
-    ):
-        st.session_state["sezione"] = "Formazione"
-
-with col2:
-    if st.button(
-        "Documenti",
-        on_click=set_sezione,
-        args=("Documenti",),
-        key="documenti_btn",
-        help="Seleziona Documenti",
-    ):
-        st.session_state["sezione"] = "Documenti"
-
-# Assegna le classi CSS ai pulsanti
-st.markdown(
-    f"""
-    <script>
-    const btn1 = window.parent.document.querySelectorAll('.stButton button')[0];
-    const btn2 = window.parent.document.querySelectorAll('.stButton button')[1];
-    
-    btn1.className = '{'active' if st.session_state["sezione"] == "Formazione" else 'inactive'}';
-    btn2.className = '{'active' if st.session_state["sezione"] == "Documenti" else 'inactive'}';
-    </script>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Visualizza la sezione selezionata
-st.write(f"Hai selezionato: {st.session_state['sezione']}")
-
-
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
     file_ateco = './.data/AziendeAteco.xlsx'
