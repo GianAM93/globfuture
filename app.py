@@ -110,10 +110,11 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_docume
     return excel_documenti_file.getvalue()
 
 # Layout dell'interfaccia
+st.markdown(style, unsafe_allow_html=True)
 st.title("Gestione Corsi e Documenti")
 
 # Selezione tra corsi e documenti
-opzione = custom_radio()
+selected_option = create_selector()
 
 # Caricamento file e selezione anno
 file_caricato = st.file_uploader(f"Carica il file {opzione.lower()} (Formato .xlsx)", type="xlsx")
