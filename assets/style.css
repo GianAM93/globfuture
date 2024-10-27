@@ -37,6 +37,18 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
+        z-index: 1; /* Aggiungi questo */
+}
+
+.radio-button span {
+    position: relative;
+    z-index: 2;
+}
+
+.radio-button.active {
+    color: white;
+    position: relative;
+    z-index: 1;
 }
 
 .radio-button:before {
