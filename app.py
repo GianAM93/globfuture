@@ -82,23 +82,6 @@ st.title("Gestione Corsi e Documenti")
 # 6. Usa il nuovo custom radio invece del selectbox
 opzione = custom_radio()
 
-# 7. Il resto del tuo codice principale
-file_caricato = st.file_uploader(f"Carica il file {opzione.lower()} (Formato .xlsx)", type="xlsx")
-anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
-
-# Carica i file di mappatura
-df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, df_mappa_documenti, df_periodicita_documenti = carica_file_mappatura()
-
-# Genera file in base alla selezione
-if st.button("Genera File") and file_caricato:
-    if opzione == "Corsi":
-        excel_first_file, excel_grouped_file = processa_corsi(file_caricato, df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, anno_riferimento)
-        st.download_button("Scarica file completo dei corsi", data=excel_first_file, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
-        st.download_button("Scarica file dei corsi per gruppo", data=excel_grouped_file, file_name=f"Programma_{anno_riferimento}_per_gruppo.xlsx")
-    elif opzione == "Documenti":
-        excel_documenti_file = processa_documenti(file_caricato, df_mappa_documenti, df_periodicita_documenti, anno_riferimento)
-        st.download_button("Scarica file dei documenti", data=excel_documenti_file, file_name=f"Documenti_scadenza_{anno_riferimento}.xlsx")
-
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
     file_ateco = './.data/AziendeAteco.xlsx'
