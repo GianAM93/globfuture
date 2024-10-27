@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from io import BytesIO
+import streamlit.components.v1 as components 
 
 # 1. Definizione dei colori tematici
 colors = {
