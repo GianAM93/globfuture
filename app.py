@@ -82,6 +82,35 @@ st.title("Gestione Corsi e Documenti")
 # 6. Usa il nuovo custom radio invece del selectbox
 opzione = custom_radio()
 
+# Prima il tuo CSS personalizzato
+st.markdown("""
+<style>
+    /* Il tuo CSS esistente qui */
+</style>
+""", unsafe_allow_html=True)
+
+# Poi il JavaScript
+js_code = """
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Imposta il tema iniziale
+        document.body.setAttribute('data-theme', 'Corsi');
+        
+        // Aggiungi listener per il cambio tema
+        const buttons = document.querySelectorAll('.radio-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const theme = this.getAttribute('data-value');
+                document.body.setAttribute('data-theme', theme);
+            });
+        });
+    });
+</script>
+"""
+
+# Inietta il JavaScript
+components.html(js_code, height=0)
+
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
     file_ateco = './.data/AziendeAteco.xlsx'
