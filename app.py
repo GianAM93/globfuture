@@ -3,12 +3,101 @@ import pandas as pd
 import os
 from io import BytesIO
 
+import streamlit as st
+import pandas as pd
+import os
+from io import BytesIO
+
+# 1. PRIMA DI TUTTO - Definizione dei colori tematici e funzioni custom
+colors = {
+    "Corsi": {
+        "primary": "#6C63FF",
+        "gradient": "linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%)",
+        "light": "rgba(108, 99, 255, 0.1)"
+    },
+    "Documenti": {
+        "primary": "#FF6B6B",
+        "gradient": "linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%)",
+        "light": "rgba(255, 107, 107, 0.1)"
+    }
+}
+
+def custom_radio():
+    # HTML per i bottoni personalizzati
+    radio_html = """
+        <div class="custom-radio-container">
+            <button class="radio-button active" data-value="Corsi" onclick="handleClick(this)">
+                Corsi
+            </button>
+            <button class="radio-button" data-value="Documenti" onclick="handleClick(this)">
+                Documenti
+            </button>
+        </div>
+        <script>
+            function handleClick(element) {
+                const value = element.getAttribute('data-value');
+                const buttons = document.getElementsByClassName('radio-button');
+                Array.from(buttons).forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+                document.body.setAttribute('data-theme', value);
+                // Invia il valore a Streamlit
+                Streamlit.setComponentValue(value);
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Imposta il tema iniziale
+                document.body.setAttribute('data-theme', 'Corsi');
+            });
+        </script>
+    """
+    st.components.v1.html(radio_html, height=80)
+    return st.session_state.get('selected_option', 'Corsi')
+
+# 2. Funzione per caricare il CSS
 def load_css(file_name):
     with open(os.path.join('assets', file_name)) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Carica il CSS
+# 3. Carica il CSS
 load_css('style.css')
+
+# 4. Le tue funzioni esistenti per il caricamento dei file di mappatura
+def carica_file_mappatura():
+    # Il tuo codice esistente...
+    file_ateco = './.data/AziendeAteco.xlsx'
+    file_mappa_corsi = './.data/MappaCorsi.xlsx'
+    # ... resto del codice ...
+
+def processa_corsi(file_corsi, df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, anno_riferimento):
+    # Il tuo codice esistente...
+    pass
+
+def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_documenti, anno_riferimento):
+    # Il tuo codice esistente...
+    pass
+
+# 5. Layout dell'interfaccia
+st.title("Gestione Corsi e Documenti")
+
+# 6. Usa il nuovo custom radio invece del selectbox
+opzione = custom_radio()
+
+# 7. Il resto del tuo codice principale
+file_caricato = st.file_uploader(f"Carica il file {opzione.lower()} (Formato .xlsx)", type="xlsx")
+anno_riferimento = st.number_input("Anno di riferimento", min_value=2023, step=1, format="%d", value=2025)
+
+# Carica i file di mappatura
+df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, df_mappa_documenti, df_periodicita_documenti = carica_file_mappatura()
+
+# Genera file in base alla selezione
+if st.button("Genera File") and file_caricato:
+    if opzione == "Corsi":
+        excel_first_file, excel_grouped_file = processa_corsi(file_caricato, df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, anno_riferimento)
+        st.download_button("Scarica file completo dei corsi", data=excel_first_file, file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx")
+        st.download_button("Scarica file dei corsi per gruppo", data=excel_grouped_file, file_name=f"Programma_{anno_riferimento}_per_gruppo.xlsx")
+    elif opzione == "Documenti":
+        excel_documenti_file = processa_documenti(file_caricato, df_mappa_documenti, df_periodicita_documenti, anno_riferimento)
+        st.download_button("Scarica file dei documenti", data=excel_documenti_file, file_name=f"Documenti_scadenza_{anno_riferimento}.xlsx")
 
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
@@ -75,7 +164,7 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_docume
 st.title("Gestione Corsi e Documenti")
 
 # Selezione tra corsi e documenti
-opzione = st.radio("Scegli l'analisi da eseguire:", ["Corsi", "Documenti"])
+opzione = custom_radio()
 
 # Caricamento file e selezione anno
 file_caricato = st.file_uploader(f"Carica il file {opzione.lower()} (Formato .xlsx)", type="xlsx")
