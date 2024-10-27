@@ -18,14 +18,13 @@ colors = {
 }
 
 def custom_radio():
-    # HTML per i bottoni personalizzati
     radio_html = """
         <div class="custom-radio-container">
             <button class="radio-button active" data-value="Corsi" onclick="handleClick(this)">
-                Corsi
+                <span>Corsi</span>
             </button>
             <button class="radio-button" data-value="Documenti" onclick="handleClick(this)">
-                Documenti
+                <span>Documenti</span>
             </button>
         </div>
         <script>
@@ -54,17 +53,17 @@ def custom_radio():
             });
         </script>
     """
-    components.html(radio_html, height=50)
+    components.html(radio_html, height=80)  # Aumentato leggermente l'height
     return st.session_state.get('selected_option', 'Corsi')
 
 # 2. Funzione per caricare il CSS
 def load_css():
-    css_path = os.path.join('.assets', 'style.css')
+    css_path = os.path.join('assets', 'style.css')
     if os.path.exists(css_path):
         with open(css_path) as f:
             st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
     else:
-        st.error("File CSS non trovato in .assets/style.css")
+        st.error("File CSS non trovato in assets/style.css")
 
 # 3. Carica il CSS
 load_css()
