@@ -1,29 +1,135 @@
-/* style.css */
-body {
-    background-color: #FFFFFF;
-    color: #4A5568;
+/* Main Page Styling */
+.main {
+    padding: 2rem;
+    background-color: #f8f9fa;
 }
 
-.stButton>button {
-    width: 300px;
-    height: 70px;
-    border-radius: 20px;
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px;
-    transition: background-color 0.3s, color 0.3s;
+/* Header Styling */
+.stTitle {
+    color: #1f4287;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 2rem;
 }
 
-/* Pulsante attivo */
-.stButton>button.active {
-    background-color: #FF6B6B;
+/* Selectbox Styling */
+.stSelectbox {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stSelectbox > div > div {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+/* File Uploader Styling */
+.stFileUploader {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px dashed #4a90e2;
+    margin: 1rem 0;
+}
+
+.stFileUploader:hover {
+    border-color: #2171cd;
+}
+
+/* Number Input Styling */
+.stNumberInput {
+    background-color: white;
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stNumberInput > div > div > input {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+/* Button Styling */
+.stButton > button {
+    width: 100%;
+    background-color: #4a90e2;
     color: white;
-    border: 2px solid #FF6B6B;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
 }
 
-/* Pulsante inattivo */
-.stButton>button.inactive {
-    background-color: transparent;
-    color: #FF6B6B;
-    border: 2px solid #FF6B6B;
+.stButton > button:hover {
+    background-color: #2171cd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Download Button Styling */
+.stDownloadButton > button {
+    background-color: #28a745;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    transition: all 0.3s ease;
+}
+
+.stDownloadButton > button:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Error Messages */
+.stAlert {
+    background-color: #fff3f3;
+    color: #dc3545;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #dc3545;
+}
+
+/* Success Messages */
+.stSuccess {
+    background-color: #f0fff4;
+    color: #28a745;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #28a745;
+}
+
+/* Container Styling */
+.css-1d391kg {
+    padding: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin: 1rem 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .main {
+        padding: 1rem;
+    }
+    
+    .stTitle {
+        font-size: 2rem !important;
+    }
+    
+    .stButton > button,
+    .stDownloadButton > button {
+        padding: 0.5rem 1rem;
+    }
 }
