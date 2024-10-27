@@ -3,51 +3,6 @@ import pandas as pd
 import os
 from io import BytesIO
 
-# 1. Carica il CSS di base per Streamlit
-def load_css():
-    css_path = os.path.join('.assets', 'style.css')
-    with open(css_path) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-# 2. Crea i pulsanti di selezione personalizzati
-def create_selector():
-    selector_html = """
-    <div class="theme-selector">
-        <button class="theme-button corsi active" data-theme="Corsi" onclick="selectTheme(this)">
-            <span class="button-content">Corsi</span>
-        </button>
-        <button class="theme-button documenti" data-theme="Documenti" onclick="selectTheme(this)">
-            <span class="button-content">Documenti</span>
-        </button>
-    </div>
-
-    <script>
-    function selectTheme(element) {
-        // Rimuovi active da tutti i bottoni
-        document.querySelectorAll('.theme-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Aggiungi active al bottone selezionato
-        element.classList.add('active');
-        
-        // Imposta il tema
-        const theme = element.getAttribute('data-theme');
-        document.body.setAttribute('data-theme', theme);
-        
-        // Comunica con Streamlit
-        window.Streamlit.setComponentValue(theme);
-    }
-
-    // Imposta il tema iniziale
-    document.addEventListener('DOMContentLoaded', function() {
-        document.body.setAttribute('data-theme', 'Corsi');
-    });
-    </script>
-    """
-    selection = st.components.v1.html(selector_html, height=100)
-    return selection if selection else "Corsi"
-
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
     file_ateco = './.data/AziendeAteco.xlsx'
@@ -110,11 +65,10 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_docume
     return excel_documenti_file.getvalue()
 
 # Layout dell'interfaccia
-st.markdown(style, unsafe_allow_html=True)
 st.title("Gestione Corsi e Documenti")
 
 # Selezione tra corsi e documenti
-selected_option = create_selector()
+opzione = st.selectbox("Scegli l'analisi da eseguire", ["Corsi", "Documenti"])
 
 # Caricamento file e selezione anno
 file_caricato = st.file_uploader(f"Carica il file {opzione.lower()} (Formato .xlsx)", type="xlsx")
