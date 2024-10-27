@@ -3,6 +3,13 @@ import pandas as pd
 import os
 from io import BytesIO
 
+def load_css(file_name):
+    with open(os.path.join('assets', file_name)) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# Carica il CSS
+load_css('style.css')
+
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
     file_ateco = './.data/AziendeAteco.xlsx'
