@@ -3,12 +3,7 @@ import pandas as pd
 import os
 from io import BytesIO
 
-import streamlit as st
-import pandas as pd
-import os
-from io import BytesIO
-
-# 1. PRIMA DI TUTTO - Definizione dei colori tematici e funzioni custom
+# 1. Definizione dei colori tematici
 colors = {
     "Corsi": {
         "primary": "#6C63FF",
@@ -35,81 +30,44 @@ def custom_radio():
         </div>
         <script>
             function handleClick(element) {
-                const value = element.getAttribute('data-value');
-                const buttons = document.getElementsByClassName('radio-button');
-                Array.from(buttons).forEach(btn => btn.classList.remove('active'));
+                // Rimuovi active da tutti i bottoni
+                document.querySelectorAll('.radio-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Aggiungi active al bottone cliccato
                 element.classList.add('active');
+                
+                // Imposta il tema
+                const value = element.getAttribute('data-value');
                 document.body.setAttribute('data-theme', value);
-                // Invia il valore a Streamlit
-                Streamlit.setComponentValue(value);
+                
+                // Comunica con Streamlit
+                if (window.Streamlit) {
+                    window.Streamlit.setComponentValue(value);
+                }
             }
 
+            // Imposta il tema iniziale quando il documento è caricato
             document.addEventListener('DOMContentLoaded', function() {
-                // Imposta il tema iniziale
                 document.body.setAttribute('data-theme', 'Corsi');
             });
         </script>
     """
-    st.components.v1.html(radio_html, height=80)
+    components.html(radio_html, height=50)
     return st.session_state.get('selected_option', 'Corsi')
 
 # 2. Funzione per caricare il CSS
-def load_css(file_name):
-    with open(os.path.join('assets', file_name)) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+def load_css():
+    css_path = os.path.join('.assets', 'style.css')
+    if os.path.exists(css_path):
+        with open(css_path) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    else:
+        st.error("File CSS non trovato in .assets/style.css")
 
 # 3. Carica il CSS
-load_css('style.css')
-
-# 4. Le tue funzioni esistenti per il caricamento dei file di mappatura
-def carica_file_mappatura():
-    # Il tuo codice esistente...
-    file_ateco = './.data/AziendeAteco.xlsx'
-    file_mappa_corsi = './.data/MappaCorsi.xlsx'
-    # ... resto del codice ...
-
-def processa_corsi(file_corsi, df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, anno_riferimento):
-    # Il tuo codice esistente...
-    pass
-
-def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_documenti, anno_riferimento):
-    # Il tuo codice esistente...
-    pass
-
-# 5. Layout dell'interfaccia
-st.title("Gestione Corsi e Documenti")
-
-# 6. Usa il nuovo custom radio invece del selectbox
-opzione = custom_radio()
-
-# Prima il tuo CSS personalizzato
-st.markdown("""
-<style>
-    /* Il tuo CSS esistente qui */
-</style>
-""", unsafe_allow_html=True)
-
-# Poi il JavaScript
-js_code = """
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Imposta il tema iniziale
-        document.body.setAttribute('data-theme', 'Corsi');
-        
-        // Aggiungi listener per il cambio tema
-        const buttons = document.querySelectorAll('.radio-button');
-        buttons.forEach(button => {
-            button.addEventListener('click', function() {
-                const theme = this.getAttribute('data-value');
-                document.body.setAttribute('data-theme', theme);
-            });
-        });
-    });
-</script>
-"""
-
-# Inietta il JavaScript
-components.html(js_code, height=0)
+load_css()
 
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
