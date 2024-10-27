@@ -110,7 +110,7 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_docume
     return excel_documenti_file.getvalue()
 
 # Layout dell'interfaccia
-st.markdown(style, unsafe_allow_html=True)
+st.markdown(.style, unsafe_allow_html=True)
 st.title("Gestione Corsi e Documenti")
 
 # Selezione tra corsi e documenti
