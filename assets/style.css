@@ -1,104 +1,201 @@
-style = """
-<style>
-/* Theme Selector Styling */
-.theme-selector {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin: 2rem 0;
-    padding: 1rem;
+/* Main Page Styling */
+.main {
+    padding: 3rem;
+    background: linear-gradient(135deg, #F8F9FD 0%, #F1F4FF 100%);
 }
 
-.theme-button {
-    min-width: 200px;
-    padding: 1.5rem 3rem;
-    border: none;
-    border-radius: 15px;
-    font-size: 1.25rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+/* Header Styling with modern gradient */
+.stTitle {
+    background: linear-gradient(90deg, #6C63FF 0%, #4C46B3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.8rem !important;
+    font-weight: 800 !important;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid rgba(108, 99, 255, 0.2);
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+/* Radio Button Styling */
+.stRadio > label {
     background: white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.theme-button.corsi {
-    border: 2px solid #6C63FF;
-    color: #6C63FF;
-}
-
-.theme-button.documenti {
-    border: 2px solid #FF6B6B;
-    color: #FF6B6B;
-}
-
-.theme-button.corsi.active {
-    background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
-    color: white;
-    border: none;
-}
-
-.theme-button.documenti.active {
-    background: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%);
-    color: white;
-    border: none;
-}
-
-.theme-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.button-content {
-    position: relative;
-    z-index: 1;
-}
-
-/* Generate Button Styling */
-.stButton > button {
-    background: var(--primary-color);
-    color: white;
-    padding: 0.75rem 2rem;
-    border-radius: 10px;
-    border: none;
-    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 1rem 0;
     transition: all 0.3s ease;
 }
 
-.stButton > button:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
+.stRadio > div {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-/* Theme Variables */
-[data-theme="Corsi"] {
-    --primary-color: #6C63FF;
-    --primary-gradient: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
+/* Custom radio button design */
+.stRadio input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #6C63FF;
+    border-radius: 50%;
+    margin-right: 8px;
+    position: relative;
+    top: 4px;
 }
 
-[data-theme="Documenti"] {
-    --primary-color: #FF6B6B;
-    --primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%);
+.stRadio input[type="radio"]:checked {
+    background-color: #6C63FF;
+    border-color: #6C63FF;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
 }
 
 /* File Uploader Styling */
 .stFileUploader {
     background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    border: 2px dashed var(--primary-color);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 2px dashed #6C63FF;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.stFileUploader:hover {
+    border-color: #4C46B3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Number Input Styling */
+.stNumberInput {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
 .stNumberInput > div > div > input {
-    border-color: var(--primary-color);
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.stNumberInput > div > div > input:focus {
+    border-color: #6C63FF;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* Button Styling */
+.stButton > button {
+    background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 1.5rem 0;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stButton > button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108, 99, 255, 0.3);
 }
 
 /* Download Button Styling */
 .stDownloadButton > button {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
-</style>
-"""
+
+.stDownloadButton > button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+/* Container Cards */
+.css-1d391kg {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 1.5rem 0;
+    border: 1px solid rgba(108, 99, 255, 0.1);
+}
+
+/* Status Messages */
+.stAlert {
+    background: #FEF2F2;
+    color: #DC2626;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #DC2626;
+    margin: 1rem 0;
+}
+
+.stSuccess {
+    background: #F0FDF4;
+    color: #16A34A;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #16A34A;
+    margin: 1rem 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .main {
+        padding: 1.5rem;
+    }
+    
+    .stTitle {
+        font-size: 2.2rem !important;
+        text-align: left;
+    }
+    
+    .stButton > button,
+    .stDownloadButton > button {
+        padding: 0.75rem 1.5rem;
+        width: 100%;
+    }
+    
+    .stRadio > div {
+        flex-direction: column;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F1F4FF;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6C63FF;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4C46B3;
+}
