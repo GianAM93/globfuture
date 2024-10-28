@@ -68,68 +68,6 @@ with col2:
         value=2025
     )
 
-# Load mapping files
-df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, df_mappa_documenti, df_periodicita_documenti = carica_file_mappatura()
-
-# Center the generate button
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    if st.button("Genera File", use_container_width=True):
-        if file_caricato:
-            if opzione == "Corsi":
-                excel_first_file, excel_grouped_file = processa_corsi(
-                    file_caricato, df_ateco, df_mappa_corsi,
-                    df_periodo_gruppi, df_aggiornamento, anno_riferimento
-                )
-                
-                st.markdown("""
-                    <div class="success-message">
-                        ✅ File generati con successo!
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.download_button(
-                        "📥 Scarica file completo",
-                        data=excel_first_file,
-                        file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx",
-                        use_container_width=True
-                    )
-                with col2:
-                    st.download_button(
-                        "📥 Scarica file per gruppo",
-                        data=excel_grouped_file,
-                        file_name=f"Programma_{anno_riferimento}_per_gruppo.xlsx",
-                        use_container_width=True
-                    )
-                    
-            elif opzione == "Documenti":
-                excel_documenti_file = processa_documenti(
-                    file_caricato, df_mappa_documenti,
-                    df_periodicita_documenti, anno_riferimento
-                )
-                
-                st.markdown("""
-                    <div class="success-message">
-                        ✅ File generato con successo!
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                st.download_button(
-                    "📥 Scarica file documenti",
-                    data=excel_documenti_file,
-                    file_name=f"Documenti_scadenza_{anno_riferimento}.xlsx",
-                    use_container_width=True
-                )
-        else:
-            st.markdown("""
-                <div class="error-message">
-                    ⚠️ Per favore, carica un file prima di procedere.
-                </div>
-            """, unsafe_allow_html=True)
-
-
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
     file_ateco = './.data/AziendeAteco.xlsx'
