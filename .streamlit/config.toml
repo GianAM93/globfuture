@@ -1,6 +1,12 @@
 [theme]
-primaryColor="#6C63FF"           # Colore principale moderno e vivace
-backgroundColor="#F8F9FD"        # Sfondo principale chiaro con una leggera tinta blu
-secondaryBackgroundColor="#FFFFFF" # Sfondo secondario bianco puro
-textColor="#1E293B"              # Colore testo scuro leggermente bluastro
-font="Inter"                     # Font moderno e leggibile
+primaryColor = "#6C63FF"
+backgroundColor = "#F8F9FD"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1E293B"
+font = "Inter"
+
+# Additional settings
+[theme.components]
+stButton.height = "3rem"
+stSelectbox.height = "3rem"
+stTextInput.height = "3rem"
