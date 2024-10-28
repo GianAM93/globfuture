@@ -1,6 +1,5 @@
-/* Reset Streamlit's default container */
 .block-container {
-    padding: 0 !important;
+    padding-top: 3rem !important; /* Sposta l’intero contenuto verso il basso */
     max-width: 1000px !important;
 }
 
