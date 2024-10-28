@@ -3,65 +3,13 @@ import pandas as pd
 import os
 from io import BytesIO
 
-# Page configuration
-st.set_page_config(
-    page_title="Gestione Corsi e Documenti",
-    page_icon="📚",
-    layout="centered",
-    initial_sidebar_state="collapsed",
-)
-
 def load_css(file_name):
     with open(os.path.join('assets', file_name)) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Load existing CSS
+# Carica il CSS
 load_css('style.css')
 
-# Header with modern design
-st.markdown("""
-    <div style='text-align: center; padding: 2rem 0;'>
-        <h1 style='
-            background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        '>
-            Gestione Corsi e Documenti
-        </h1>
-        <p style='color: #666; font-size: 1.1rem;'>
-            Sistema di gestione integrato per corsi e documentazione
-        </p>
-    </div>
-""", unsafe_allow_html=True)
-
-# Create two columns for better layout
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    opzione = st.radio(
-        "Scegli l'analisi da eseguire:",
-        ["Corsi", "Documenti"],
-        horizontal=True,
-    )
-
-file_caricato = st.file_uploader(
-    f"Carica il file {opzione.lower()} (Formato .xlsx)",
-    type="xlsx"
-)
-
-# Year input with modern styling
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    anno_riferimento = st.number_input(
-        "Anno di riferimento",
-        min_value=2023,
-        step=1,
-        format="%d",
-        value=2025
-    )
 
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
