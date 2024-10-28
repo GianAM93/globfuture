@@ -3,11 +3,6 @@ import pandas as pd
 import os
 from io import BytesIO
 
-import streamlit as st
-import pandas as pd
-import os
-from io import BytesIO
-
 # Page configuration
 st.set_page_config(
     page_title="Gestione Corsi e Documenti",
