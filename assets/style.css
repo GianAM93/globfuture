@@ -1,125 +1,153 @@
-import streamlit as st
-import pandas as pd
-import os
-from io import BytesIO
+/* Reset Streamlit's default container */
+.block-container {
+    padding: 0 !important;
+    max-width: 1000px !important;
+}
 
-# Page configuration
-st.set_page_config(
-    page_title="Gestione Corsi e Documenti",
-    page_icon="📚",
-    layout="centered",
-    initial_sidebar_state="collapsed",
-)
+.main > div {
+    padding: 1rem !important;
+}
 
-def load_css(file_name):
-    with open(os.path.join('assets', file_name)) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+/* Main layout and background */
+.main {
+    background: linear-gradient(135deg, #F8F9FD 0%, #EEF1FF 100%) !important;
+    padding: 0;
+}
 
-# Load existing CSS
-load_css('style.css')
+/* Modern Title Styling */
+.stTitle {
+    background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem 0;
+}
 
-# Header with modern design
-st.markdown("""
-    <div style='text-align: center; padding: 2rem 0;'>
-        <h1 style='
-            background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        '>
-            Gestione Corsi e Documenti
-        </h1>
-        <p style='color: #666; font-size: 1.1rem;'>
-            Sistema di gestione integrato per corsi e documentazione
-        </p>
-    </div>
-""", unsafe_allow_html=True)
+/* Radio Button Container */
+.stRadio {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 1.5rem 0;
+}
 
-# Create two columns for better layout
-col1, col2 = st.columns([3, 1])
+.stRadio > div {
+    display: flex;
+    gap: 1rem;
+}
 
-with col1:
-    opzione = st.radio(
-        "Scegli l'analisi da eseguire:",
-        ["Corsi", "Documenti"],
-        horizontal=True,
-    )
+/* File Uploader Styling */
+[data-testid="stFileUploader"] {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 1.5rem 0;
+}
 
-file_caricato = st.file_uploader(
-    f"Carica il file {opzione.lower()} (Formato .xlsx)",
-    type="xlsx"
-)
+[data-testid="stFileUploadDropzone"] {
+    border: 2px dashed #6C63FF !important;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    color: #666;
+}
 
-# Year input with modern styling
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    anno_riferimento = st.number_input(
-        "Anno di riferimento",
-        min_value=2023,
-        step=1,
-        format="%d",
-        value=2025
-    )
+/* Number Input Container */
+[data-testid="stNumberInput"] {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 1.5rem 0;
+}
 
-# Load mapping files
-df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, df_mappa_documenti, df_periodicita_documenti = carica_file_mappatura()
+/* Button Styling */
+.stButton > button {
+    background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-# Center the generate button
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    if st.button("Genera File", use_container_width=True):
-        if file_caricato:
-            if opzione == "Corsi":
-                excel_first_file, excel_grouped_file = processa_corsi(
-                    file_caricato, df_ateco, df_mappa_corsi,
-                    df_periodo_gruppi, df_aggiornamento, anno_riferimento
-                )
-                
-                st.markdown("""
-                    <div class="success-message">
-                        ✅ File generati con successo!
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.download_button(
-                        "📥 Scarica file completo",
-                        data=excel_first_file,
-                        file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx",
-                        use_container_width=True
-                    )
-                with col2:
-                    st.download_button(
-                        "📥 Scarica file per gruppo",
-                        data=excel_grouped_file,
-                        file_name=f"Programma_{anno_riferimento}_per_gruppo.xlsx",
-                        use_container_width=True
-                    )
-                    
-            elif opzione == "Documenti":
-                excel_documenti_file = processa_documenti(
-                    file_caricato, df_mappa_documenti,
-                    df_periodicita_documenti, anno_riferimento
-                )
-                
-                st.markdown("""
-                    <div class="success-message">
-                        ✅ File generato con successo!
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                st.download_button(
-                    "📥 Scarica file documenti",
-                    data=excel_documenti_file,
-                    file_name=f"Documenti_scadenza_{anno_riferimento}.xlsx",
-                    use_container_width=True
-                )
-        else:
-            st.markdown("""
-                <div class="error-message">
-                    ⚠️ Per favore, carica un file prima di procedere.
-                </div>
-            """, unsafe_allow_html=True)
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(108, 99, 255, 0.3);
+}
+
+/* Download Button */
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    width: 100%;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.stDownloadButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+/* Alert Messages */
+.success-message {
+    background: #F0FDF4;
+    color: #16A34A;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.error-message {
+    background: #FEF2F2;
+    color: #DC2626;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .stTitle {
+        font-size: 2rem !important;
+    }
+    
+    .stRadio > div {
+        flex-direction: column;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F1F4FF;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6C63FF;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4C46B3;
+}
