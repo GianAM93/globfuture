@@ -3,12 +3,116 @@ import pandas as pd
 import os
 from io import BytesIO
 
+# Page configuration
+st.set_page_config(
+    page_title="Gestione Corsi e Documenti",
+    page_icon="📚",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
+
 def load_css(file_name):
     with open(os.path.join('assets', file_name)) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Carica il CSS
+# Custom CSS injection for modern container design
+st.markdown("""
+    <style>
+    .main > div {
+        padding: 2rem;
+        background: linear-gradient(135deg, #F8F9FD 0%, #EEF1FF 100%);
+    }
+    .main {
+        background: linear-gradient(135deg, #F8F9FD 0%, #EEF1FF 100%);
+    }
+    .block-container {
+        padding: 2rem;
+        max-width: 1000px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        margin: 1rem auto;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Load existing CSS
 load_css('style.css')
+
+# Header with modern design
+st.markdown("""
+    <div style='text-align: center; padding: 2rem 0;'>
+        <h1 style='
+            background: linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        '>
+            Gestione Corsi e Documenti
+        </h1>
+        <p style='color: #666; font-size: 1.1rem;'>
+            Sistema di gestione integrato per corsi e documentazione
+        </p>
+    </div>
+""", unsafe_allow_html=True)
+
+# Modern container for main content
+st.markdown("""
+    <div style='
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        margin: 1.5rem 0;
+    '>
+    </div>
+""", unsafe_allow_html=True)
+
+# Create two columns for better layout
+col1, col2 = st.columns([3, 1])
+
+with col1:
+    # Radio buttons with custom styling
+    opzione = st.radio(
+        "Scegli l'analisi da eseguire:",
+        ["Corsi", "Documenti"],
+        horizontal=True,
+    )
+
+# File uploader with custom container
+st.markdown("""
+    <div style='
+        background: white;
+        border: 2px dashed #6C63FF;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        margin: 1.5rem 0;
+    '>
+        <div style='color: #666;'>📎 Trascina qui il tuo file o fai click per selezionarlo</div>
+    </div>
+""", unsafe_allow_html=True)
+
+file_caricato = st.file_uploader(
+    f"Carica il file {opzione.lower()} (Formato .xlsx)",
+    type="xlsx",
+    label_visibility="collapsed"
+)
+
+# Year input with modern styling
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    anno_riferimento = st.number_input(
+        "Anno di riferimento",
+        min_value=2023,
+        step=1,
+        format="%d",
+        value=2025
+    )
+
 
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
