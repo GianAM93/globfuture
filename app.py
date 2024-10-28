@@ -75,7 +75,7 @@ def processa_documenti(file_documenti, df_mappa_documenti, df_periodicita_docume
 st.title("Gestione Corsi e Documenti")
 
 # Selezione tra corsi e documenti
-opzione = st.selectbox("Scegli l'analisi da eseguire", ["Corsi", "Documenti"])
+opzione = st.radio("Scegli l'analisi da eseguire:", ["Corsi", "Documenti"])
 
 # Caricamento file e selezione anno
 file_caricato = st.file_uploader(f"Carica il file {opzione.lower()} (Formato .xlsx)", type="xlsx")
