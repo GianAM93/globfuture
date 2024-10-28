@@ -3,53 +3,12 @@ import pandas as pd
 import os
 from io import BytesIO
 
-# Definizione dei colori tematici
-colors = {
-    "Corsi": {
-        "primary": "#6C63FF",
-        "gradient": "linear-gradient(135deg, #6C63FF 0%, #4C46B3 100%)",
-        "light": "rgba(108, 99, 255, 0.1)"
-    },
-    "Documenti": {
-        "primary": "#FF6B6B",
-        "gradient": "linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%)",
-        "light": "rgba(255, 107, 107, 0.1)"
-    }
-}
+def load_css(file_name):
+    with open(os.path.join('assets', file_name)) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Custom radio buttons con HTML/CSS
-def custom_radio():
-    col1, col2 = st.columns(2)
-    
-    # Recupera lo stato corrente (default a "Corsi")
-    current_option = st.session_state.get('selected_option', 'Corsi')
-    
-    # HTML per i bottoni personalizzati
-    radio_html = f"""
-        <div class="custom-radio-container">
-            <button class="radio-button {'active' if current_option == 'Corsi' else ''}" 
-                    data-value="Corsi" onclick="handleClick(this)">
-                Corsi
-            </button>
-            <button class="radio-button {'active' if current_option == 'Documenti' else ''}" 
-                    data-value="Documenti" onclick="handleClick(this)">
-                Documenti
-            </button>
-        </div>
-        <script>
-            function handleClick(element) {{
-                const value = element.getAttribute('data-value');
-                const buttons = document.getElementsByClassName('radio-button');
-                Array.from(buttons).forEach(btn => btn.classList.remove('active'));
-                element.classList.add('active');
-                // Invia il valore a Streamlit
-                Streamlit.setComponentValue(value);
-            }}
-        </script>
-    """
-    
-    st.components.v1.html(radio_html, height=80)
-    return st.session_state.get('selected_option', 'Corsi')
+# Carica il CSS
+load_css('style.css')
 
 # Carica i file di mappatura dalla cartella ".data"
 def carica_file_mappatura():
