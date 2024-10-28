@@ -3,6 +3,11 @@ import pandas as pd
 import os
 from io import BytesIO
 
+import streamlit as st
+import pandas as pd
+import os
+from io import BytesIO
+
 # Page configuration
 st.set_page_config(
     page_title="Gestione Corsi e Documenti",
@@ -14,28 +19,6 @@ st.set_page_config(
 def load_css(file_name):
     with open(os.path.join('assets', file_name)) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-# Custom CSS injection for modern container design
-st.markdown("""
-    <style>
-    .main > div {
-        padding: 2rem;
-        background: linear-gradient(135deg, #F8F9FD 0%, #EEF1FF 100%);
-    }
-    .main {
-        background: linear-gradient(135deg, #F8F9FD 0%, #EEF1FF 100%);
-    }
-    .block-container {
-        padding: 2rem;
-        max-width: 1000px;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-        margin: 1rem auto;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 # Load existing CSS
 load_css('style.css')
@@ -59,47 +42,19 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Modern container for main content
-st.markdown("""
-    <div style='
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        margin: 1.5rem 0;
-    '>
-    </div>
-""", unsafe_allow_html=True)
-
 # Create two columns for better layout
 col1, col2 = st.columns([3, 1])
 
 with col1:
-    # Radio buttons with custom styling
     opzione = st.radio(
         "Scegli l'analisi da eseguire:",
         ["Corsi", "Documenti"],
         horizontal=True,
     )
 
-# File uploader with custom container
-st.markdown("""
-    <div style='
-        background: white;
-        border: 2px dashed #6C63FF;
-        border-radius: 16px;
-        padding: 2rem;
-        text-align: center;
-        margin: 1.5rem 0;
-    '>
-        <div style='color: #666;'>📎 Trascina qui il tuo file o fai click per selezionarlo</div>
-    </div>
-""", unsafe_allow_html=True)
-
 file_caricato = st.file_uploader(
     f"Carica il file {opzione.lower()} (Formato .xlsx)",
-    type="xlsx",
-    label_visibility="collapsed"
+    type="xlsx"
 )
 
 # Year input with modern styling
@@ -112,6 +67,67 @@ with col2:
         format="%d",
         value=2025
     )
+
+# Load mapping files
+df_ateco, df_mappa_corsi, df_periodo_gruppi, df_aggiornamento, df_mappa_documenti, df_periodicita_documenti = carica_file_mappatura()
+
+# Center the generate button
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    if st.button("Genera File", use_container_width=True):
+        if file_caricato:
+            if opzione == "Corsi":
+                excel_first_file, excel_grouped_file = processa_corsi(
+                    file_caricato, df_ateco, df_mappa_corsi,
+                    df_periodo_gruppi, df_aggiornamento, anno_riferimento
+                )
+                
+                st.markdown("""
+                    <div class="success-message">
+                        ✅ File generati con successo!
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.download_button(
+                        "📥 Scarica file completo",
+                        data=excel_first_file,
+                        file_name=f"Corsi_scadenza_{anno_riferimento}_completo.xlsx",
+                        use_container_width=True
+                    )
+                with col2:
+                    st.download_button(
+                        "📥 Scarica file per gruppo",
+                        data=excel_grouped_file,
+                        file_name=f"Programma_{anno_riferimento}_per_gruppo.xlsx",
+                        use_container_width=True
+                    )
+                    
+            elif opzione == "Documenti":
+                excel_documenti_file = processa_documenti(
+                    file_caricato, df_mappa_documenti,
+                    df_periodicita_documenti, anno_riferimento
+                )
+                
+                st.markdown("""
+                    <div class="success-message">
+                        ✅ File generato con successo!
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                st.download_button(
+                    "📥 Scarica file documenti",
+                    data=excel_documenti_file,
+                    file_name=f"Documenti_scadenza_{anno_riferimento}.xlsx",
+                    use_container_width=True
+                )
+        else:
+            st.markdown("""
+                <div class="error-message">
+                    ⚠️ Per favore, carica un file prima di procedere.
+                </div>
+            """, unsafe_allow_html=True)
 
 
 # Carica i file di mappatura dalla cartella ".data"
